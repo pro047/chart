@@ -1,6 +1,7 @@
-import 'package:chart/home.dart';
+import 'package:chart/main.dart';
 import 'package:chart/loginPage/login_db.dart';
 import 'package:chart/loginPage/member_register_page.dart';
+import 'package:chart/screen/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';

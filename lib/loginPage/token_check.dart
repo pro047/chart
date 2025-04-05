@@ -1,4 +1,4 @@
-import 'package:chart/home.dart';
+import 'package:chart/screen/home.dart';
 import 'package:chart/loginPage/login_main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';

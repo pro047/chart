@@ -1,5 +1,9 @@
 import 'package:chart/loginPage/token_check.dart';
+import 'package:chart/screen/home.dart';
+import 'package:chart/screen/patient.dart';
+import 'package:chart/screen/plan.dart';
 import 'package:chart/screen/splash_screen.dart';
+import 'package:chart/widget/bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:chart/config/my_sql_connector.dart';
 
@@ -14,8 +18,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      routes: {'/login': (context) => TokenCheck()},
-      home: Scaffold(body: SplashScreen()),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.light().copyWith(primaryColor: Colors.amberAccent),
+      initialRoute: '/',
+      routes: {
+        '/login': (context) => TokenCheck(),
+        '/': (context) => SplashScreen(),
+        '/home': (context) => Home(),
+        '/patient': (context) => Patient(),
+        '/plan': (context) => Plan(),
+      },
     );
   }
 }
