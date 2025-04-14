@@ -3,7 +3,7 @@ import 'package:chart/screen/home.dart';
 import 'package:chart/screen/patient.dart';
 import 'package:chart/screen/plan.dart';
 import 'package:chart/screen/splash_screen.dart';
-import 'package:chart/widget/bottom_bar.dart';
+import 'package:chart/screen/therapist.dart';
 import 'package:flutter/material.dart';
 import 'package:chart/config/my_sql_connector.dart';
 
@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => TokenCheck(),
         '/': (context) => SplashScreen(),
         '/home': (context) => Home(),
+        '/therapist': (context) => Therapist(),
         '/patient': (context) => Patient(),
         '/plan': (context) => Plan(),
       },

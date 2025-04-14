@@ -8,7 +8,7 @@ Future<MySQLConnection> dbConnector() async {
     port: 3306,
     userName: 'root',
     password: 'wlstjd1153',
-    databaseName: 'users',
+    databaseName: 'chartpt',
   );
 
   await conn.connect();

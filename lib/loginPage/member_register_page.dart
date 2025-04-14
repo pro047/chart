@@ -14,6 +14,7 @@ class _MemberRegisterPageState extends State<MemberRegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordVerifyingController =
       TextEditingController();
+  final TextEditingController nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +58,17 @@ class _MemberRegisterPageState extends State<MemberRegisterPage> {
                       placeholder: '비밀번호를 다시 입력해주세요',
                       textAlign: TextAlign.center,
                       obscureText: true,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: 300,
+                    child: CupertinoTextField(
+                      controller: nameController,
+                      placeholder: '이름을 입력해주세요',
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
@@ -125,6 +137,7 @@ class _MemberRegisterPageState extends State<MemberRegisterPage> {
                               insertMember(
                                 userIdController.text,
                                 passwordController.text,
+                                nameController.text,
                               );
                               showDialog(
                                 context: context,

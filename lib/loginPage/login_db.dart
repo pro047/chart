@@ -2,14 +2,14 @@ import 'package:chart/config/hash_password.dart';
 import 'package:chart/config/my_sql_connector.dart';
 import 'package:mysql_client/mysql_client.dart';
 
-Future<void> insertMember(String userName, String password) async {
+Future<void> insertMember(String userName, String password, String name) async {
   final conn = await dbConnector();
   final hash = convertHash(password);
 
   try {
     await conn.execute(
-      "INSERT INTO users (userName, password) VALUES (:userName, :password )",
-      {"userName": userName, "password": hash},
+      "INSERT INTO user (userName, password, name) VALUES (:userName, :password, :name )",
+      {"userName": userName, "password": hash, "name": name},
     );
     print(hash);
   } catch (e) {
@@ -21,14 +21,13 @@ Future<void> insertMember(String userName, String password) async {
 
 Future<String?> login(String userName, String password) async {
   final conn = await dbConnector();
-
   final hash = convertHash(password);
 
   IResultSet? result;
 
   try {
     result = await conn.execute(
-      'SELECT id FROM users WHERE userName = :userName and password = password',
+      'SELECT id FROM user WHERE userName = :userName and password = :password',
       {"userName": userName, "password": hash},
     );
 
@@ -52,7 +51,7 @@ Future<String?> confirmIdCheck(String userName) async {
 
   try {
     result = await conn.execute(
-      "SELECT IFNULL ((SELECT userName FROM users WHERE userName=:userName), 0) as idCheck",
+      "SELECT IFNULL ((SELECT userName FROM user WHERE userName=:userName), 0) as idCheck",
       {"userName": userName},
     );
 
