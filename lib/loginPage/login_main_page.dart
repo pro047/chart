@@ -33,17 +33,9 @@ class _LoginPageState extends State<LoginPage> {
     print('token is $token');
   }
 
-  void _setAutoLogin(String token, String autoLoginToken) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', token);
-    await prefs.setString('autoLoginToken', autoLoginToken);
-    print('token is $token');
-    print('autotoken is $autoLoginToken');
-  }
-
   void _delAuthLogin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('autoLoginToken');
+    await prefs.remove('token');
   }
 
   @override
@@ -84,21 +76,51 @@ class _LoginPageState extends State<LoginPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        '자동 로그인',
-                        style: TextStyle(
-                          color: CupertinoColors.activeBlue,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              final loginCheck = await login(
+                                userIdController.text,
+                                passwordController.text,
+                              );
+
+                              if (loginCheck == '-1') {
+                                print('로그인 실패');
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('알림'),
+                                      content: Text('아이디 또는 비밀번호가 올바르지 않습니다'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('닫기'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              } else {
+                                print('로그인 성공');
+                                print(loginCheck);
+                                _setLogin(loginCheck!);
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Home(),
+                                  ),
+                                );
+                              }
+                            },
+                            child: Text('로그인'),
+                          ),
                         ),
-                      ),
-                      CupertinoSwitch(
-                        value: switchValue,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            switchValue = value ?? false;
-                          });
-                        },
-                        activeTrackColor: CupertinoColors.activeBlue,
                       ),
                       Text('  '),
                       OutlinedButton(
@@ -113,61 +135,6 @@ class _LoginPageState extends State<LoginPage> {
                         child: Text('계정 생성'),
                       ),
                     ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    width: 250,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final loginCheck = await login(
-                          userIdController.text,
-                          passwordController.text,
-                        );
-                        final autoLoginCheck = await login(
-                          userIdController.text,
-                          passwordController.text,
-                        );
-
-                        if (loginCheck == '-1') {
-                          print('로그인 실패');
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('알림'),
-                                content: Text('아이디 또는 비밀번호가 올바르지 않습니다'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text('닫기'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        } else {
-                          print('로그인 성공');
-                          print(loginCheck);
-                          _setLogin(loginCheck!);
-
-                          if (switchValue == true) {
-                            _setAutoLogin(loginCheck, autoLoginCheck!);
-                          } else {
-                            _delAuthLogin();
-                          }
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Home()),
-                          );
-                        }
-                      },
-                      child: Text('로그인'),
-                    ),
                   ),
                 ),
               ],
