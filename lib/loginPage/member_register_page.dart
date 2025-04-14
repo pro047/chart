@@ -1,4 +1,5 @@
 import 'package:chart/loginPage/login_db.dart';
+import 'package:chart/loginPage/login_main_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -148,7 +149,13 @@ class _MemberRegisterPageState extends State<MemberRegisterPage> {
                                     actions: [
                                       TextButton(
                                         onPressed: () {
-                                          Navigator.of(context).pop();
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) => LoginMainPage(),
+                                            ),
+                                          );
                                         },
                                         child: Text('닫기'),
                                       ),
