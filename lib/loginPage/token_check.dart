@@ -22,8 +22,6 @@ class _TokenCheckState extends State<TokenCheck> {
   void _autoLoginCheck() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     final String? token = preferences.getString('token');
-    print('token');
-
     if (token != null) {
       setState(() {
         isToken = true;

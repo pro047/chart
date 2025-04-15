@@ -33,11 +33,6 @@ class _LoginPageState extends State<LoginPage> {
     print('token is $token');
   }
 
-  void _delAuthLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -39,46 +39,89 @@ class _TherapistState extends State<Therapist> {
     return '-1';
   }
 
+  List<Widget> items = [];
+
+  void addItems() {
+    setState(() {
+      items.add(TextField(decoration: InputDecoration(labelText: 'To Do')));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 50),
-              Container(
-                padding: EdgeInsets.only(right: 50),
-                child: Row(
-                  children: [
-                    FutureBuilder(
-                      future: getName(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return throw Error();
-                        } else {
-                          print(snapshot.data);
-                          return Text(
-                            '${snapshot.data} 치료사님 안녕하세요',
-                            style: TextStyle(fontSize: 25),
-                          );
-                        }
+      home: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 50),
+                  Container(
+                    child: Row(
+                      children: [
+                        FutureBuilder(
+                          future: getName(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return CircularProgressIndicator();
+                            } else if (snapshot.hasError) {
+                              return throw Error();
+                            } else {
+                              print(snapshot.data);
+                              return Text(
+                                '${snapshot.data} 치료사님 안녕하세요',
+                                style: TextStyle(fontSize: 25),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(child: Text('To Do List')),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      addItems();
+                    },
+                    child: Icon(Icons.add),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        return Dismissible(
+                          key: ValueKey(items[index]),
+                          background: Container(
+                            color: Colors.red,
+                            alignment: Alignment.center,
+                            child: Text(
+                              'delete',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(10),
+                            child: items[index],
+                          ),
+                          onDismissed: (direction) {
+                            setState(() {
+                              items.removeAt(index);
+                            });
+                          },
+                        );
                       },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Container(child: Text('To Do List')),
-              TextButton(
-                onPressed: () {
-                  print(getName());
-                },
-                child: Text('name'),
-              ),
-            ],
+            ),
           ),
         ),
       ),

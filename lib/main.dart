@@ -19,7 +19,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light().copyWith(primaryColor: Colors.amberAccent),
       initialRoute: '/',
       routes: {
         '/login': (context) => TokenCheck(),
