@@ -1,6 +1,6 @@
 import 'package:chart/loginPage/token_check.dart';
 import 'package:chart/screen/home.dart';
-import 'package:chart/screen/patient.dart';
+import 'package:chart/screen/patient/patient.dart';
 import 'package:chart/screen/plan.dart';
 import 'package:chart/screen/splash_screen.dart';
 import 'package:chart/screen/therapist.dart';
@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/login': (context) => TokenCheck(),
         '/': (context) => SplashScreen(),
+        '/login': (context) => TokenCheck(),
         '/home': (context) => Home(),
         '/therapist': (context) => Therapist(),
         '/patient': (context) => Patient(),

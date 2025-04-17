@@ -1,7 +1,9 @@
-import 'package:chart/screen/patient.dart';
+import 'package:chart/screen/patient/patient.dart';
 import 'package:chart/screen/plan.dart';
 import 'package:chart/screen/therapist.dart';
 import 'package:chart/loginPage/token_check.dart';
+import 'package:chart/widget/patient_drawer.dart';
+import 'package:chart/widget/plan_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,14 +23,30 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        drawer: _index == 1 ? PatientDrawer() : PlanDrawer(),
         appBar: CupertinoNavigationBar(
+          backgroundColor: Colors.transparent,
+
+          leading:
+              _index == 0
+                  ? null
+                  : Builder(
+                    builder: (context) {
+                      return IconButton(
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                        icon: Icon(Icons.menu),
+                      );
+                    },
+                  ),
           middle: Text('chartPT'),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               CupertinoButton(
                 padding: EdgeInsets.zero,
-                child: Icon(CupertinoIcons.arrowshape_turn_up_left, size: 30),
+                child: Text('로그아웃', style: TextStyle(fontSize: 20)),
                 onPressed: () {
                   showCupertinoModalPopup(
                     context: context,
@@ -65,7 +83,7 @@ class _HomeState extends State<Home> {
             ],
           ),
         ),
-        body: Container(child: _pages[_index]),
+        body: SafeArea(child: Container(child: _pages[_index])),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _index,
           onTap: (value) {
