@@ -1,4 +1,4 @@
-import 'package:chart/screen/patient/patient_detail.dart';
+import 'package:chart/view/patient/patient_detail.dart';
 import 'package:flutter/material.dart';
 
 class Patient extends StatelessWidget {

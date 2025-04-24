@@ -1,7 +1,6 @@
-import 'package:chart/widget/text_form_field.dart';
+import 'package:chart/view/widget/text_form_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class PatientDetail extends StatefulWidget {
   const PatientDetail({super.key});

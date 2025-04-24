@@ -1,15 +1,12 @@
-import 'package:chart/loginPage/token_check.dart';
-import 'package:chart/screen/home.dart';
-import 'package:chart/screen/patient/patient.dart';
-import 'package:chart/screen/plan.dart';
-import 'package:chart/screen/splash_screen.dart';
-import 'package:chart/screen/therapist.dart';
+import 'package:chart/auth/view/login_view.dart';
+import 'package:chart/auth/view/signup_view.dart';
+import 'package:chart/view/therapist/therapist_new.dart';
 import 'package:flutter/material.dart';
-import 'package:chart/config/my_sql_connector.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  dbConnector();
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -19,15 +16,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      initialRoute: '/login',
       routes: {
-        '/': (context) => SplashScreen(),
-        '/login': (context) => TokenCheck(),
-        '/home': (context) => Home(),
-        '/therapist': (context) => Therapist(),
-        '/patient': (context) => Patient(),
-        '/plan': (context) => Plan(),
+        '/login': (context) => LoginView(),
+        '/signup': (context) => SignupView(),
+        'therapist': (context) => TherapistView(),
       },
     );
+    // return MaterialApp(
+    //   debugShowCheckedModeBanner: false,
+    //   initialRoute: '/',
+    //   routes: {
+    //     '/': (context) => SplashScreen(),
+    //     '/login': (context) => TokenCheck(),
+    //     '/home': (context) => Home(),
+    //     '/therapist': (context) => Therapist(),
+    //     '/patient': (context) => Patient(),
+    //     '/plan': (context) => Plan(),
+    //   },
+    // );
   }
 }

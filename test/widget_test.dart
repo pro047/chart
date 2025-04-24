@@ -1,30 +1,70 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:chart/model/datasource/therapist.dart';
+import 'package:chart/model/model/therapist.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:chart/model/repository/therapist.dart';
 
-import 'package:chart/main.dart';
+void main() async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  // FFI 기반으로 sqflite 테스트용 DB 준비
+  sqfliteFfiInit();
 
-void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  late Database db;
+  late TherapistNameRepository repo;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  setUp(() async {
+    // 메모리 DB 생성 (앱에 영향 없음)
+    databaseFactory = databaseFactoryFfi;
+    db = await openDatabase(
+      inMemoryDatabasePath,
+      version: 1,
+      onCreate: (db, version) async {
+        await db.execute('''
+        CREATE TABLE users (
+          id INTEGER PRIMARY KEY,
+          email TEXT,
+          name TEXT
+        )
+      ''');
+        await db.insert('users', {'email': 'test@email.com', 'name': '홍길동'});
+      },
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    repo = TherapistNameRepository();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    SharedPreferences.setMockInitialValues({'loggedEmail': 'test@email.com'});
+  });
+  test('이름이 가져와 지는지', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEamil = prefs.getString('loggedEmail');
+    final email = 'test@email.com';
+    final result = await db.query(
+      'users',
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+
+    if (result.isNotEmpty) {
+      print('saved : $savedEamil');
+      final therapistName = TherapistNameModel.fromMap(result.first);
+      print('therapistname: ${therapistName.name}');
+      return therapistName.name;
+    } else {
+      throw Error();
+    }
+  });
+
+  final TherapistNameRepository therapistNameRepository =
+      TherapistNameRepository();
+
+  final TherapistNameDatasource datasource = TherapistNameDatasource();
+
+  test('치료사 이름', () async {
+    print('repo');
+    final name = await datasource.getTherapistName();
+    print('dg: $name');
+
+    return name;
   });
 }
