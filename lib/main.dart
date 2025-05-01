@@ -1,6 +1,4 @@
-import 'package:chart/auth/view/login_view.dart';
-import 'package:chart/auth/view/signup_view.dart';
-import 'package:chart/view/therapist/therapist_new.dart';
+import 'package:chart/layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,11 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/login',
-      routes: {
-        '/login': (context) => LoginView(),
-        '/signup': (context) => SignupView(),
-        'therapist': (context) => TherapistView(),
-      },
+      home: Layout(),
     );
     // return MaterialApp(
     //   debugShowCheckedModeBanner: false,
