@@ -11,7 +11,6 @@ class LoginViewModel extends AsyncNotifier<UserModel?> {
   @override
   FutureOr<UserModel?> build() {
     // _loginRepository = ref.read(LoginRepositoryProvider);
-    ref.read(authStateProvider.notifier).login();
     return null;
   }
 
@@ -21,6 +20,7 @@ class LoginViewModel extends AsyncNotifier<UserModel?> {
     try {
       final user = await _loginRepository.login(email, password);
       state = AsyncData(user);
+      ref.read(authStateProvider.notifier).login();
     } catch (e, st) {
       state = AsyncError(e, st);
     }

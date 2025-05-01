@@ -1,7 +1,6 @@
 import 'package:chart/config/db.dart';
 import 'package:chart/model/model/patient/patient_model.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
@@ -49,10 +48,4 @@ void main() {
       print('gender is ${row['gender']}');
     }
   });
-
-  Future<void> resetDatabase() async {
-    final path = join(await getDatabasesPath(), 'chartpt.db');
-    await deleteDatabase(path);
-    print('db reset');
-  }
 }

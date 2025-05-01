@@ -1,4 +1,5 @@
 import 'package:chart/auth/model/model/signup_model.dart';
+import 'package:chart/auth/view/login_view.dart';
 import 'package:chart/auth/view_model/signup_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,7 +68,9 @@ class _SignupViewState extends ConsumerState<SignupView> {
                     print("nameContoller.text: ${nameContoller.text}");
                     print("signupState: $signupState");
                     print("signupviewmodel: $signupViewModel");
-                    Navigator.pushNamed(context, '/login');
+                    Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(builder: (_) => LoginView()));
                   },
                   child:
                       signupState.isLoading

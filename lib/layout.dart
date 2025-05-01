@@ -1,7 +1,6 @@
 import 'package:chart/auth/view/login_view.dart';
 import 'package:chart/auth/view_model/auth_state_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chart/main.dart';
 import 'package:chart/view/patient/patient_view.dart';
 import 'package:chart/view/plan/plan.dart';
 import 'package:chart/view/therapist/therapist_view.dart';

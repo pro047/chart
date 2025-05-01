@@ -1,6 +1,6 @@
+import 'package:chart/auth/view/signup_view.dart';
 import 'package:chart/auth/view_model/login_view_model.dart';
 import 'package:chart/layout.dart';
-import 'package:chart/view/therapist/therapist_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -38,49 +38,53 @@ class _LoginViewState extends ConsumerState<LoginView> {
           padding: EdgeInsets.all(10),
           child: Form(
             key: formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'email'),
-                  controller: emailContoller,
-                ),
-                TextFormField(
-                  obscureText: true,
-                  decoration: InputDecoration(labelText: 'password'),
-                  controller: passwordContoller,
-                ),
-                loginState.isLoading
-                    ? CircularProgressIndicator()
-                    : TextButton(
-                      onPressed: () async {
-                        loginViewModel.saveLoginEmail(emailContoller.text);
-                        if (!loginState.hasError) {
-                          await loginViewModel.login(
-                            emailContoller.text,
-                            passwordContoller.text,
-                          );
-                          print('email: ${emailContoller.text}');
-                          print('password: ${passwordContoller.text}');
-                          print('loginstate: $loginState');
-                          Navigator.of(
-                            context,
-                          ).push(MaterialPageRoute(builder: (_) => Layout()));
-                        }
-                      },
-                      child: Text('login'),
-                    ),
-                if (loginState.hasError)
-                  Text(
-                    '로그인 실패 ${loginState.error}',
-                    style: TextStyle(color: Colors.black),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(labelText: 'email'),
+                    controller: emailContoller,
                   ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/signup');
-                  },
-                  child: Text('signup'),
-                ),
-              ],
+                  TextFormField(
+                    obscureText: true,
+                    decoration: InputDecoration(labelText: 'password'),
+                    controller: passwordContoller,
+                  ),
+                  loginState.isLoading
+                      ? CircularProgressIndicator()
+                      : TextButton(
+                        onPressed: () async {
+                          loginViewModel.saveLoginEmail(emailContoller.text);
+                          if (!loginState.hasError) {
+                            await loginViewModel.login(
+                              emailContoller.text,
+                              passwordContoller.text,
+                            );
+                            print('email: ${emailContoller.text}');
+                            print('password: ${passwordContoller.text}');
+                            print('loginstate: $loginState');
+                            Navigator.of(
+                              context,
+                            ).push(MaterialPageRoute(builder: (_) => Layout()));
+                          }
+                        },
+                        child: Text('login'),
+                      ),
+                  if (loginState.hasError)
+                    Text(
+                      '로그인 실패 ${loginState.error}',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(
+                        context,
+                      ).push(MaterialPageRoute(builder: (_) => SignupView()));
+                    },
+                    child: Text('signup'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
