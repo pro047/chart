@@ -1,17 +1,20 @@
+import 'package:chart/auth/view/login_view.dart';
+import 'package:chart/auth/view_model/auth_state_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chart/main.dart';
 import 'package:chart/view/patient/patient_view.dart';
 import 'package:chart/view/plan/plan.dart';
 import 'package:chart/view/therapist/therapist_view.dart';
 import 'package:flutter/material.dart';
 
-class Layout extends StatefulWidget {
+class Layout extends ConsumerStatefulWidget {
   const Layout({super.key});
 
   @override
-  State<Layout> createState() => _LayoutState();
+  ConsumerState<Layout> createState() => _LayoutState();
 }
 
-class _LayoutState extends State<Layout> {
+class _LayoutState extends ConsumerState<Layout> {
   int _currentIndex = 0;
 
   final _pages = [TherapistView(), PatientView(), Plan()];
@@ -20,14 +23,16 @@ class _LayoutState extends State<Layout> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('charpt'),
+        title: Text('chartpt'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             onPressed: () {
               Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => MyApp()),
+                MaterialPageRoute(builder: (context) => LoginView()),
                 (route) => false,
               );
+              ref.read(authStateProvider.notifier).logout();
             },
             icon: Icon(Icons.logout),
           ),
@@ -41,9 +46,12 @@ class _LayoutState extends State<Layout> {
               _currentIndex = newIndex;
             }),
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'therapist'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_hospital),
+            label: 'therapist',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'patient'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'plan'),
+          BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'plan'),
         ],
       ),
     );

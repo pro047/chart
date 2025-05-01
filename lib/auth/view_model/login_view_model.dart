@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:chart/auth/model/model/user_model.dart';
 import 'package:chart/auth/model/repository/login_repository.dart';
+import 'package:chart/auth/view_model/auth_state_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +11,7 @@ class LoginViewModel extends AsyncNotifier<UserModel?> {
   @override
   FutureOr<UserModel?> build() {
     // _loginRepository = ref.read(LoginRepositoryProvider);
+    ref.read(authStateProvider.notifier).login();
     return null;
   }
 

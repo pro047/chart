@@ -1,4 +1,6 @@
 import 'package:chart/auth/view_model/login_view_model.dart';
+import 'package:chart/layout.dart';
+import 'package:chart/view/therapist/therapist_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -47,30 +49,26 @@ class _LoginViewState extends ConsumerState<LoginView> {
                   decoration: InputDecoration(labelText: 'password'),
                   controller: passwordContoller,
                 ),
-                TextButton(
-                  onPressed: () async {
-                    await loginViewModel.login(
-                      emailContoller.text,
-                      passwordContoller.text,
-                    );
-                    print('email: ${emailContoller.text}');
-                    print('password: ${passwordContoller.text}');
-                    print('loginstate: $loginState');
-                  },
-                  child:
-                      loginState.isLoading
-                          ? CircularProgressIndicator()
-                          : TextButton(
-                            onPressed: () {
-                              loginViewModel.saveLoginEmail(
-                                emailContoller.text,
-                              );
-                              Navigator.pushNamed(context, 'therapist');
-                            },
-                            child: Text('login'),
-                          ),
-                ),
-
+                loginState.isLoading
+                    ? CircularProgressIndicator()
+                    : TextButton(
+                      onPressed: () async {
+                        loginViewModel.saveLoginEmail(emailContoller.text);
+                        if (!loginState.hasError) {
+                          await loginViewModel.login(
+                            emailContoller.text,
+                            passwordContoller.text,
+                          );
+                          print('email: ${emailContoller.text}');
+                          print('password: ${passwordContoller.text}');
+                          print('loginstate: $loginState');
+                          Navigator.of(
+                            context,
+                          ).push(MaterialPageRoute(builder: (_) => Layout()));
+                        }
+                      },
+                      child: Text('login'),
+                    ),
                 if (loginState.hasError)
                   Text(
                     '로그인 실패 ${loginState.error}',

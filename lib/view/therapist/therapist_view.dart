@@ -33,7 +33,6 @@ class _TherapistViewState extends ConsumerState<TherapistView> {
 
     // ignore: avoid_unnecessary_containers
     return Scaffold(
-      appBar: AppBar(title: Text('therapist')),
       body: Padding(
         padding: EdgeInsets.all(10),
         child: Column(

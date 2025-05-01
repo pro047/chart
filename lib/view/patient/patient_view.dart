@@ -14,10 +14,7 @@ class _PatientViewState extends ConsumerState<PatientView> {
   final TextEditingController _inputController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final patientState = ref.watch(patientViewModelProvider.notifier);
-
     return Scaffold(
-      appBar: AppBar(title: Text('patient')),
       body: Padding(
         padding: EdgeInsets.all(10),
         child: Column(
@@ -55,8 +52,9 @@ Future<void> showPatientRegisterDialog(
   BuildContext context,
   WidgetRef ref,
 ) async {
+  final patientState = ref.watch(patientViewModelProvider.notifier);
   final formkey = GlobalKey<FormState>();
-  String? dropdownValue;
+  String dropdownValue = 'male';
   final nameController = TextEditingController();
   final ageController = TextEditingController();
   final occupationController = TextEditingController();
@@ -116,7 +114,9 @@ Future<void> showPatientRegisterDialog(
                     controller: occupationController,
                     decoration: InputDecoration(label: Text('직업을 입력해주세요')),
                     validator: (value) {
-                      return value == null ? '직업을 입력해주세요' : null;
+                      return value == null || value.isEmpty
+                          ? '직업을 입력해주세요'
+                          : null;
                     },
                   ),
                 ],
@@ -126,9 +126,12 @@ Future<void> showPatientRegisterDialog(
               TextButton(
                 onPressed: () async {
                   if (!formkey.currentState!.validate()) return;
-                  final selectedGender = Gender.values.firstWhere(
-                    (g) => g.name == dropdownValue,
-                  );
+                  final selectedGender =
+                      {
+                        "male": Gender.male,
+                        "female": Gender.female,
+                      }[dropdownValue] ??
+                      Gender.male;
                   final newPatientInfo = PatientModel(
                     name: nameController.text,
                     age: int.parse(ageController.text),
@@ -136,9 +139,7 @@ Future<void> showPatientRegisterDialog(
                     firstVisit: DateTime.now(),
                     occupation: occupationController.text,
                   );
-                  await ref
-                      .read(patientViewModelProvider.notifier)
-                      .saveInfo(newPatientInfo);
+                  await patientState.saveInfo(newPatientInfo);
                   Navigator.pop(context);
                 },
                 child: Text('등록'),
@@ -153,4 +154,7 @@ Future<void> showPatientRegisterDialog(
       );
     },
   );
+  nameController.dispose();
+  ageController.dispose();
+  occupationController.dispose();
 }

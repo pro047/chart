@@ -43,11 +43,22 @@ class PatientModel {
     'occupation': occupation,
   };
 
-  factory PatientModel.fromMap(Map<String, dynamic> map) => PatientModel(
-    name: map['name'],
-    age: map['age'],
-    gender: Gender.values.firstWhere((g) => g.name == map['gender']),
-    firstVisit: DateTime.parse(map['firstVisit']),
-    occupation: map['occupation'],
-  );
+  factory PatientModel.fromMap(Map<String, dynamic> map) {
+    final rawGender = map['gender'];
+    final gender = Gender.values.firstWhere(
+      (g) => g.name == rawGender,
+      orElse: () {
+        print('gender check: $rawGender');
+        return Gender.male;
+      },
+    );
+
+    return PatientModel(
+      name: map['name'],
+      age: map['age'],
+      gender: gender,
+      firstVisit: DateTime.parse(map['firstVisit']),
+      occupation: map['occupation'],
+    );
+  }
 }

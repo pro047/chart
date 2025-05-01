@@ -1,5 +1,5 @@
 import 'package:chart/config/db.dart';
-import 'package:chart/model/model/therapist.dart';
+import 'package:chart/model/model/therapist/therapist_name_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TherapistNameDatasource {
