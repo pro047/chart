@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:chart/model/repository/therapist.dart';
+import 'package:chart/model/repository/therapist/therapist_name_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TherapistNameViewModel extends AsyncNotifier<String> {

@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 enum Gender { male, female }
 
 class PatientModel {
@@ -35,13 +37,16 @@ class PatientModel {
     );
   }
 
-  Map<String, dynamic> toMap() => {
-    'name': name,
-    'age': age,
-    'gender': gender.name,
-    'firstVisit': firstVisit.toIso8601String(),
-    'occupation': occupation,
-  };
+  Map<String, dynamic> toMap() {
+    final formatter = DateFormat('yyyyMMdd');
+    return {
+      'name': name,
+      'age': age,
+      'gender': gender.name,
+      'firstVisit': formatter.format(firstVisit),
+      'occupation': occupation,
+    };
+  }
 
   factory PatientModel.fromMap(Map<String, dynamic> map) {
     final rawGender = map['gender'];
@@ -54,6 +59,7 @@ class PatientModel {
     );
 
     return PatientModel(
+      id: map['id'],
       name: map['name'],
       age: map['age'],
       gender: gender,

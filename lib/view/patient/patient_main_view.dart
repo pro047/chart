@@ -1,8 +1,6 @@
-import 'package:chart/model/model/patient/patient_model.dart';
-import 'package:chart/view/patient/patient_dialog.dart';
-import 'package:chart/view_model/patient/patient_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chart/view/patient/patient_dialog.dart';
 
 class PatientView extends ConsumerStatefulWidget {
   const PatientView({super.key});
@@ -15,8 +13,6 @@ class _PatientViewState extends ConsumerState<PatientView> {
   final TextEditingController _inputController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final patientList = ref.read(patientViewModelProvider.notifier);
-
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(10),
@@ -40,7 +36,7 @@ class _PatientViewState extends ConsumerState<PatientView> {
               child: Row(
                 children: [
                   SizedBox(
-                    width: 300,
+                    width: 200,
                     child: TextField(
                       controller: _inputController,
                       decoration: InputDecoration(hintText: '환자 이름으로 검색'),

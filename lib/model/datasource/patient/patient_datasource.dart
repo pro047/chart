@@ -4,24 +4,43 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
 class PatientDatasource {
-  Future<List<PatientModel>> getPatientInfo(String name) async {
+  Future<List<PatientModel>> getAllPatientInfo() async {
     final db = await DatabaseHelper.instance.database;
-    final result = await db.query(
-      'patients',
-      where: 'name = ?',
-      whereArgs: [name],
-    );
-    return result.map((i) => PatientModel.fromMap(i)).toList();
+    final result = await db.query('patients');
+    print('[get all patient ok]');
+    return result.map((e) => PatientModel.fromMap(e)).toList();
   }
 
-  Future<void> savePatientInfo(PatientModel patientInfo) async {
+  Future<PatientModel> getPatientInfoById(int id) async {
     final db = await DatabaseHelper.instance.database;
-    final patient = patientInfo.toMap();
-    await db.insert(
+    final result = await db.query('patients', where: 'id = ?', whereArgs: [id]);
+    return PatientModel.fromMap(result.first);
+  }
+
+  Future<PatientModel> savePatientInfo(PatientModel patient) async {
+    final db = await DatabaseHelper.instance.database;
+    final insertedId = await db.insert(
       'patients',
-      patient,
+      patient.toMap(),
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
+    print('[ds ok]');
+    return patient.copyWith(id: insertedId);
+  }
+
+  Future<void> updatePatientInfo(PatientModel patient) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      'patients',
+      patient.toMap(),
+      where: 'id = ?',
+      whereArgs: [patient.id],
+    );
+  }
+
+  Future<void> deletePatientInfo(int id) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.delete('patients', where: 'id = ?', whereArgs: [id]);
   }
 }
 

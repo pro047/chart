@@ -28,5 +28,6 @@ linter:
 analyzer:
   errors:
     avoid_print: ignore
+    no_leading_underscores_for_local_identifiers: ignore
   plugins:
     - custom_lint

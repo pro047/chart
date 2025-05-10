@@ -1,6 +1,6 @@
 import 'package:chart/auth/view/signup_view.dart';
 import 'package:chart/auth/view_model/login_view_model.dart';
-import 'package:chart/layout.dart';
+import 'package:chart/ui/layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

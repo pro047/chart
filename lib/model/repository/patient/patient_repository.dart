@@ -7,12 +7,27 @@ class PatientRepository {
 
   PatientRepository(this._datasource); // 의존성 주입
 
-  Future<List<PatientModel>> getPatientInfo(String name) {
-    return _datasource.getPatientInfo(name);
+  Future<List<PatientModel>> fetchAllPatientInfo() async {
+    final result = await _datasource.getAllPatientInfo();
+    print('fetch patient all data ok');
+    return result;
   }
 
-  Future<void> savePatientInfo(PatientModel patientInfo) {
-    return _datasource.savePatientInfo(patientInfo);
+  Future<PatientModel> fetchPatientInfoById(int id) async {
+    return await _datasource.getPatientInfoById(id);
+  }
+
+  Future<PatientModel> savePatientInfo(PatientModel patientInfo) async {
+    print('[repo ok]');
+    return await _datasource.savePatientInfo(patientInfo);
+  }
+
+  Future<void> updatePatientInfo(PatientModel patient) async {
+    await _datasource.updatePatientInfo(patient);
+  }
+
+  Future<void> deletePatientInfo(int id) async {
+    await _datasource.deletePatientInfo(id);
   }
 }
 
