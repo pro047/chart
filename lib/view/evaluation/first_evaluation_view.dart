@@ -1,24 +1,23 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: no_leading_underscores_for_local_identifiers, use_build_context_synchronously
 
 import 'package:chart/model/model/evlauation/evaluation_field_model.dart';
-import 'package:chart/model/model/patient/patient_model.dart';
+import 'package:chart/view/evaluation/evaluation_detail_view.dart';
 import 'package:chart/view/evaluation/evaluation_form_view.dart';
-import 'package:chart/view/patient/patient_info_view.dart';
+import 'package:chart/view/patient/patient_info/patient_info_view.dart';
 import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
-import 'package:chart/view_model/patient/patient_view_model.dart';
+import 'package:chart/view_model/patient/patient_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
-class EvaluationView extends ConsumerStatefulWidget {
-  final int? patientId;
-
-  const EvaluationView({super.key, required this.patientId});
+class FirstEvaluationView extends ConsumerStatefulWidget {
+  const FirstEvaluationView({super.key});
 
   @override
-  ConsumerState<EvaluationView> createState() => _EvaluationViewState();
+  ConsumerState<FirstEvaluationView> createState() =>
+      _FirstEvaluationViewState();
 }
 
-class _EvaluationViewState extends ConsumerState<EvaluationView> {
+class _FirstEvaluationViewState extends ConsumerState<FirstEvaluationView> {
   final _evalformKey = GlobalKey<FormState>();
 
   final TextEditingController _regionController = TextEditingController();
@@ -64,41 +63,40 @@ class _EvaluationViewState extends ConsumerState<EvaluationView> {
 
   @override
   Widget build(BuildContext context) {
-    final patientState = ref.read(patientViewModelProvider.notifier);
-    final patientFuture = patientState.getInfoById(widget.patientId!);
+    final patient = ref.watch(patientProvider);
+    final patientId = ref.watch(patientIdProvider);
+
+    if (patientId == null) {
+      return Scaffold(body: Center(child: Text('환자가 없습니다')));
+    }
+
+    final vmProvider = ref.read(
+      evaluationViewModelProvider(patientId).notifier,
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text('초기 평가')),
-      body: Column(
-        children: [
-          FutureBuilder<PatientModel>(
-            future: patientFuture,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) return CircularProgressIndicator();
-
-              final patient = snapshot.data!;
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    PatientInfoView(patient: patient),
-                    EvaluationFormView(
-                      formKey: _evalformKey,
-                      fields: _evalField,
-                      onSubmit: () async {
-                        await ref
-                            .read(evaluationViewModelProvider.notifier)
-                            .submitEval(
-                              id: widget.patientId!,
-                              fields: _evalField,
-                            );
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            PatientInfoView(patient: patient!),
+            EvaluationFormView(
+              fields: _evalField,
+              formKey: _evalformKey,
+              onSubmit: () async {
+                try {
+                  await vmProvider.submitEval(fields: _evalField);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => EvaluationDetailView()),
+                  );
+                } catch (err) {
+                  throw Exception('에러 발생 : $err');
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

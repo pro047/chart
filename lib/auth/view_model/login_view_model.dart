@@ -23,6 +23,7 @@ class LoginViewModel extends AsyncNotifier<UserModel?> {
       ref.read(authStateProvider.notifier).login();
     } catch (e, st) {
       state = AsyncError(e, st);
+      throw Exception('login failed');
     }
   }
 

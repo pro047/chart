@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chart/view/patient/patient_dialog.dart';
+import 'package:chart/view/patient/dialog/patient_dialog.dart';
 
 class PatientView extends ConsumerStatefulWidget {
   const PatientView({super.key});

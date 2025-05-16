@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 
 class DatabaseHelper {
   static const _databaseName = 'chartpt.db';
-  static const _databaseVersion = 4;
+  static const _databaseVersion = 5;
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -31,11 +31,19 @@ class DatabaseHelper {
         );
         try {
           await db.execute(
-            'CREATE TABLE evaluations (id INTEGER PRIMARY KEY AUTOINCREMENT, patientId INTEGER NOT NULL, round INTEGER NOT NULL,rom INTEGER, vas INTEGER, region TEXT, action TEXT, hx TEXT, sx TEXT, FOREIGN KEY (patientId) REFERENCES patients(id) ON DELETE CASCADE)',
+            'CREATE TABLE evaluations (id INTEGER PRIMARY KEY AUTOINCREMENT, createdAt TEXT DEFAULT CURRENT_TIMESTAMP,patientId INTEGER NOT NULL, round INTEGER NOT NULL,rom INTEGER, vas INTEGER, region TEXT, action TEXT, hx TEXT, sx TEXT, FOREIGN KEY (patientId) REFERENCES patients(id) ON DELETE CASCADE)',
           );
           print('테이블 생성 성공');
         } catch (e) {
           print('$e');
+        }
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 4) {
+          await db.execute(
+            'ALTER TABLE evaluations ADD COLUMN createdAt TEXT DEFATULT CURRENT_TIMESTAMP',
+          );
+          print('db 업그레이드 완료 : 컬럼 추가 됨');
         }
       },
     );

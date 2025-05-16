@@ -10,7 +10,7 @@ class PatientViewModel extends AsyncNotifier<List<PatientModel>> {
   @override
   FutureOr<List<PatientModel>> build() async {
     _repository = ref.read(patientRepositoryProvider);
-    return [];
+    return _repository.fetchAllPatientInfo();
   }
 
   Future<PatientModel> getInfoById(int id) async {

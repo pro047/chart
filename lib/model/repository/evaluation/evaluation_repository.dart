@@ -7,7 +7,7 @@ class EvaluationRepository {
 
   EvaluationRepository(this._datasource);
 
-  Future<EvaluationModel> getEvaluationById(int patientId) async {
+  Future<List<EvaluationModel>> getEvaluationById(int patientId) async {
     return await _datasource.fetchEvaluationById(patientId);
   }
 

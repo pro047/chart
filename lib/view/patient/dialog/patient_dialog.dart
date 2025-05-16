@@ -1,5 +1,7 @@
 import 'package:chart/model/model/patient/patient_model.dart';
+import 'package:chart/view/evaluation/first_evaluation_view.dart';
 import 'package:chart/view_model/patient/patient_group.dart';
+import 'package:chart/view_model/patient/patient_provider.dart';
 import 'package:chart/view_model/patient/patient_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +49,15 @@ class _PatientDialogState extends ConsumerState<PatientDialog> {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
+
+                    Future.microtask(() {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => FirstEvaluationView(),
+                        ),
+                      );
+                    });
                   },
                   child: Text('완료', textAlign: TextAlign.center),
                 ),
@@ -122,6 +133,7 @@ class _PatientDialogState extends ConsumerState<PatientDialog> {
     );
   }
 
+  // todo : view-model로 뺴기
   void _handleSubmit() async {
     if (!_formkey.currentState!.validate()) return;
     final newPatientInfo = PatientModel(
@@ -140,6 +152,10 @@ class _PatientDialogState extends ConsumerState<PatientDialog> {
     ref
         .read(groupedPatientsInitialProvider.notifier)
         .addPatientList(savedPatient);
+
+    ref.read(patientIdProvider.notifier).state = savedPatient.id;
+    ref.read(patientProvider.notifier).state = savedPatient;
+
     if (!context.mounted) return;
     setState(() {
       _state = DialogState.success;

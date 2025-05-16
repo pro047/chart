@@ -5,16 +5,17 @@ import 'package:chart/model/model/evlauation/evaluation_model.dart';
 import 'package:chart/model/repository/evaluation/evaluation_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EvaluationViewModel extends AsyncNotifier<List<EvaluationModel>> {
+class EvaluationViewModel
+    extends FamilyAsyncNotifier<List<EvaluationModel>, int> {
   late final EvaluationRepository _repository;
 
   @override
-  FutureOr<List<EvaluationModel>> build() async {
+  FutureOr<List<EvaluationModel>> build(int patientId) async {
     _repository = ref.read(evaluationRepositoryProvider);
-    return [];
+    return _repository.getEvaluationById(patientId);
   }
 
-  Future<EvaluationModel> getEvaluation(int patientId) async {
+  Future<List<EvaluationModel>> getEvaluationById(int patientId) async {
     return await _repository.getEvaluationById(patientId);
   }
 
@@ -57,10 +58,7 @@ class EvaluationViewModel extends AsyncNotifier<List<EvaluationModel>> {
     return prevEval.copyWith(round: nextRound);
   }
 
-  Future<void> submitEval({
-    required int id,
-    required List<EvaluationFieldModel> fields,
-  }) async {
+  Future<void> submitEval({required List<EvaluationFieldModel> fields}) async {
     final rom = int.tryParse(fields[2].controller.text);
     final vas = int.tryParse(fields[3].controller.text);
 
@@ -71,15 +69,19 @@ class EvaluationViewModel extends AsyncNotifier<List<EvaluationModel>> {
       action: fields[1].controller.text,
       hx: fields[4].controller.text,
       sx: fields[5].controller.text,
-      patientId: id,
+      patientId: arg,
+      createdAt: DateTime.now(),
     );
 
     final evalWithRound = await createEvalWithNextRound(newEval);
     await _repository.createEvaluation(evalWithRound);
+
+    state = AsyncData([...state.valueOrNull ?? [], evalWithRound]);
   }
 }
 
-final evaluationViewModelProvider =
-    AsyncNotifierProvider<EvaluationViewModel, List<EvaluationModel>>(() {
-      return EvaluationViewModel();
-    });
+final evaluationViewModelProvider = AsyncNotifierProvider.family<
+  EvaluationViewModel,
+  List<EvaluationModel>,
+  int
+>(EvaluationViewModel.new);

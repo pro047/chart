@@ -14,6 +14,7 @@ class LoginView extends ConsumerStatefulWidget {
 class _LoginViewState extends ConsumerState<LoginView> {
   TextEditingController emailContoller = TextEditingController();
   TextEditingController passwordContoller = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -26,7 +27,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
   Widget build(BuildContext context) {
     final loginState = ref.watch(loginViewModelProvider);
     final loginViewModel = ref.read(loginViewModelProvider.notifier);
-    final formKey = GlobalKey<FormState>();
 
     return GestureDetector(
       onTap: () {
@@ -50,31 +50,41 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     decoration: InputDecoration(labelText: 'password'),
                     controller: passwordContoller,
                   ),
-                  loginState.isLoading
-                      ? CircularProgressIndicator()
-                      : TextButton(
-                        onPressed: () async {
-                          loginViewModel.saveLoginEmail(emailContoller.text);
-                          if (!loginState.hasError) {
-                            await loginViewModel.login(
-                              emailContoller.text,
-                              passwordContoller.text,
-                            );
-                            print('email: ${emailContoller.text}');
-                            print('password: ${passwordContoller.text}');
-                            print('loginstate: $loginState');
-                            Navigator.of(
-                              context,
-                            ).push(MaterialPageRoute(builder: (_) => Layout()));
-                          }
-                        },
-                        child: Text('login'),
-                      ),
-                  if (loginState.hasError)
-                    Text(
-                      '로그인 실패 ${loginState.error}',
-                      style: TextStyle(color: Colors.black),
-                    ),
+                  TextButton(
+                    onPressed: () async {
+                      try {
+                        loginViewModel.saveLoginEmail(emailContoller.text);
+                        await loginViewModel.login(
+                          emailContoller.text,
+                          passwordContoller.text,
+                        );
+                        print('email: ${emailContoller.text}');
+                        print('password: ${passwordContoller.text}');
+                        print('loginstate: $loginState');
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(builder: (_) => Layout()));
+                      } catch (err) {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                title: Text('로그인 실패'),
+                                content: Text('아이디/비밀번호를 확인해주세요'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('확인'),
+                                  ),
+                                ],
+                              ),
+                        );
+                      }
+                    },
+                    child: Text('login'),
+                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.of(

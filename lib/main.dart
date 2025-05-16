@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   final db = await DatabaseHelper.instance.database;
   final tables = await db.rawQuery(
     'SELECT name FROM sqlite_master WHERE type="table"',

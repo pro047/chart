@@ -60,14 +60,8 @@ final groupedPatientsMapProvider = Provider<Map<String, List<PatientModel>>>((
   final patients = ref.watch(groupedPatientsInitialProvider);
   print(patients);
   if (!patients.hasValue) {
-    throw Exception('no data');
+    throw Exception('no data in gpmp');
   }
 
   return groupByInitial(patients.value!);
-
-  // return patients.when(
-  //   data: (patients) => groupByInitial(patients),
-  //   error: (_, __) => {},
-  //   loading: () => {},
-  // );
 });

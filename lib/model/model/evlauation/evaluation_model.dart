@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class EvaluationModel {
   final int? id;
   final int? patientId;
@@ -8,6 +10,7 @@ class EvaluationModel {
   final String? action;
   final String? hx;
   final String? sx;
+  final DateTime? createdAt;
 
   EvaluationModel({
     this.id,
@@ -19,6 +22,7 @@ class EvaluationModel {
     this.action,
     this.hx,
     this.sx,
+    this.createdAt,
   });
 
   EvaluationModel copyWith({
@@ -31,6 +35,7 @@ class EvaluationModel {
     String? action,
     String? hx,
     String? sx,
+    DateTime? createdAt,
   }) {
     return EvaluationModel(
       id: id ?? this.id,
@@ -42,6 +47,7 @@ class EvaluationModel {
       action: action ?? this.action,
       hx: hx ?? this.hx,
       sx: sx ?? this.sx,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 
@@ -56,10 +62,12 @@ class EvaluationModel {
       action: map['action'],
       hx: map['hx'],
       sx: map['sx'],
+      createdAt: DateTime.parse(map['createdAt']),
     );
   }
 
   Map<String, dynamic> toMap({bool includeId = true}) {
+    final formatter = DateFormat('yyyyMMdd');
     final map = {
       'patientId': patientId,
       'round': round,
@@ -69,6 +77,7 @@ class EvaluationModel {
       'action': action,
       'hx': hx,
       'sx': sx,
+      'createdAt': createdAt != null ? formatter.format(createdAt!) : null,
     };
 
     if (includeId && id != null) {

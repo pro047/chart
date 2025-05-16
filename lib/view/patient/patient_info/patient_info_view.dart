@@ -1,6 +1,7 @@
 import 'package:chart/model/model/patient/patient_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 class PatientInfoView extends ConsumerWidget {
   final PatientModel patient;
@@ -9,11 +10,11 @@ class PatientInfoView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final dateFormat = DateFormat('yyyy-MM-dd').format(patient.firstVisit);
     final fields = [
-      '이름 : ${patient.name}',
       '나이 : ${patient.age}',
       '성별 : ${patient.gender}',
-      '첫 내원일 : ${patient.firstVisit}',
+      '첫 내원일 : $dateFormat',
       '직업 : ${patient.occupation}',
     ];
     return Column(

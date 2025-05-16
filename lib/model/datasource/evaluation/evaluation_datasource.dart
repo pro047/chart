@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 class EvaluationDatasource {
-  Future<EvaluationModel> fetchEvaluationById(int patientId) async {
+  Future<List<EvaluationModel>> fetchEvaluationById(int patientId) async {
     final db = await DatabaseHelper.instance.database;
     final result = await db.query(
       'evaluations',
@@ -16,7 +16,7 @@ class EvaluationDatasource {
       throw Exception('평가 데이터가 없습니다 : $patientId');
     }
 
-    return EvaluationModel.fromMap(result.first);
+    return result.map((e) => EvaluationModel.fromMap(e)).toList();
   }
 
   Future<List<EvaluationModel>> insertEvaluation(EvaluationModel eval) async {
