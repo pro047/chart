@@ -11,6 +11,16 @@ class EvaluationRepository {
     return await _datasource.fetchEvaluationById(patientId);
   }
 
+  Future<EvaluationModel> getEvaluaionByPatientIdAndRound(
+    int patientId,
+    int round,
+  ) async {
+    return await _datasource.fetchEvaluationByPatientIdAndRound(
+      patientId,
+      round,
+    );
+  }
+
   Future<List<EvaluationModel>> createEvaluation(EvaluationModel eval) async {
     return await _datasource.insertEvaluation(eval);
   }

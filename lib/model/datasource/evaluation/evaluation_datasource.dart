@@ -5,61 +5,118 @@ import 'package:sqflite/sqlite_api.dart';
 
 class EvaluationDatasource {
   Future<List<EvaluationModel>> fetchEvaluationById(int patientId) async {
-    final db = await DatabaseHelper.instance.database;
-    final result = await db.query(
-      'evaluations',
-      where: 'patientId = ?',
-      whereArgs: [patientId],
-    );
+    try {
+      final db = await DatabaseHelper.instance.database;
+      final result = await db.query(
+        'evaluations',
+        where: 'patientId = ?',
+        whereArgs: [patientId],
+      );
 
-    if (result.isEmpty) {
-      throw Exception('평가 데이터가 없습니다 : $patientId');
+      if (result.isEmpty) {
+        throw Exception('평가 데이터가 없습니다 : $patientId');
+      }
+
+      return result.map((e) => EvaluationModel.fromMap(e)).toList();
+    } catch (err) {
+      print('fetchEvaluationById error : $err');
+      rethrow;
     }
+  }
 
-    return result.map((e) => EvaluationModel.fromMap(e)).toList();
+  Future<EvaluationModel> fetchEvaluationByPatientIdAndRound(
+    int patientId,
+    int round,
+  ) async {
+    try {
+      final db = await DatabaseHelper.instance.database;
+      final result = await db.query(
+        'evaluations',
+        where: 'patientId = ? AND round =?',
+        whereArgs: [patientId, round],
+      );
+
+      if (result.isEmpty) {
+        throw Exception('평가 데이터가 없습니다(patientId : $patientId, roudn: $round})');
+      }
+      return EvaluationModel.fromMap(result.first);
+    } catch (err) {
+      print('fetchEvaluationByPatientIdAndRound error : $err');
+      rethrow;
+    }
   }
 
   Future<List<EvaluationModel>> insertEvaluation(EvaluationModel eval) async {
-    final db = await DatabaseHelper.instance.database;
+    try {
+      final db = await DatabaseHelper.instance.database;
 
-    await db.insert(
-      'evaluations',
-      eval.toMap(includeId: false),
-      conflictAlgorithm: ConflictAlgorithm.ignore,
-    );
+      await db.insert(
+        'evaluations',
+        eval.toMap(includeId: false),
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
 
-    final result = await db.query(
-      'evaluations',
-      where: 'patientId = ?',
-      whereArgs: [eval.patientId],
-    );
+      final result = await db.query(
+        'evaluations',
+        where: 'patientId = ?',
+        whereArgs: [eval.patientId],
+      );
 
-    return result.map(EvaluationModel.fromMap).toList();
+      return result.map(EvaluationModel.fromMap).toList();
+    } catch (err) {
+      print('insertEvaluation error : $err');
+      rethrow;
+    }
   }
 
   Future<void> updateEvaluation(EvaluationModel eval) async {
-    final db = await DatabaseHelper.instance.database;
-    await db.update(
-      'evaluations',
-      eval.toMap(),
-      where: 'id = ?',
-      whereArgs: [eval.id],
-    );
+    try {
+      final db = await DatabaseHelper.instance.database;
+      await db.update(
+        'evaluations',
+        eval.toMap(),
+        where: 'id = ?',
+        whereArgs: [eval.id],
+      );
+    } catch (err) {
+      print('updateEvaluation error : $err');
+      rethrow;
+    }
   }
 
   Future<void> deleteEvaluation(int id) async {
-    final db = await DatabaseHelper.instance.database;
-    await db.delete('evaluations', where: 'patientId = ?', whereArgs: [id]);
+    try {
+      final db = await DatabaseHelper.instance.database;
+      await db.delete('evaluations', where: 'patientId = ?', whereArgs: [id]);
+    } catch (err) {
+      print('deleteEvaluaion error : $err');
+      rethrow;
+    }
   }
 
   Future<int> fetchMaxRound(int patientId) async {
-    final db = await DatabaseHelper.instance.database;
-    final result = await db.rawQuery(
-      'SELECT MAX(round) as maxRound FROM evaluations WHERE patientId = ?',
-      [patientId],
-    );
-    final maxRound = result.first['maxRound'] as int?;
-    return maxRound ?? 0;
+    try {
+      final db = await DatabaseHelper.instance.database;
+      final result = await db.rawQuery(
+        'SELECT MAX(round) AS maxRound FROM evaluations WHERE patientId = ?',
+        [patientId],
+      );
+
+      if (result.isEmpty) {
+        return 0;
+      }
+
+      final maxRoundValue = result.first['maxRound'];
+      final maxRound =
+          maxRoundValue is int
+              ? maxRoundValue
+              : int.parse(maxRoundValue.toString());
+      print('[maxround] : $maxRound');
+      return maxRound;
+    } catch (err) {
+      print('fetchMaxRound error : $err');
+      rethrow;
+    }
   }
 }
 

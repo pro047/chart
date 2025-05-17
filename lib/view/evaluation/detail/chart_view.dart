@@ -1,6 +1,6 @@
 import 'package:chart/model/model/evlauation/evaluation_model.dart';
 import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
-import 'package:chart/view_model/patient/patient_provider.dart';
+import 'package:chart/view_model/patient/provider/patient_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,8 +1,8 @@
 import 'package:chart/model/model/patient/patient_model.dart';
 import 'package:chart/view/evaluation/first_evaluation_view.dart';
-import 'package:chart/view_model/patient/patient_group.dart';
-import 'package:chart/view_model/patient/patient_provider.dart';
+import 'package:chart/view_model/patient/patient_group/patient_group.dart';
 import 'package:chart/view_model/patient/patient_view_model.dart';
+import 'package:chart/view_model/patient/provider/patient_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 

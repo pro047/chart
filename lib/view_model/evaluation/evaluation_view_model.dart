@@ -15,8 +15,11 @@ class EvaluationViewModel
     return _repository.getEvaluationById(patientId);
   }
 
-  Future<List<EvaluationModel>> getEvaluationById(int patientId) async {
-    return await _repository.getEvaluationById(patientId);
+  Future<EvaluationModel> getEvaluationByPatientIdAndRound(
+    int patientId,
+    int round,
+  ) async {
+    return await _repository.getEvaluaionByPatientIdAndRound(patientId, round);
   }
 
   Future<void> updateEvaluation(EvaluationModel eval) async {

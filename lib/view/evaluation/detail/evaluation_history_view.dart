@@ -1,6 +1,7 @@
 import 'package:chart/model/model/evlauation/evaluation_model.dart';
 import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
-import 'package:chart/view_model/patient/patient_provider.dart';
+import 'package:chart/view_model/patient/provider/patient_provider.dart';
+import 'package:chart/view_model/patient/provider/round_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,14 +10,22 @@ class EvaluationHistoryView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final patientId = ref.read(patientIdProvider);
+    final patientId = ref.watch(patientIdProvider);
+    final round = ref.watch(roundProvider);
+
+    if (patientId == null || round == null) {
+      return Center(child: Text('해당 환자의 평가 기록이 없습니다'));
+    }
     final evalProvider = ref.read(
-      evaluationViewModelProvider(patientId!).notifier,
+      evaluationViewModelProvider(patientId).notifier,
     );
-    final evalFuture = evalProvider.getEvaluationById(patientId);
+    final evalFuture = evalProvider.getEvaluationByPatientIdAndRound(
+      patientId,
+      round,
+    );
 
     return Container(
-      child: FutureBuilder<List<EvaluationModel>>(
+      child: FutureBuilder<EvaluationModel>(
         future: evalFuture,
         builder: (context, snapshot) {
           final state = snapshot.connectionState;
@@ -30,7 +39,7 @@ class EvaluationHistoryView extends ConsumerWidget {
                 return Text('에러 발생 ${snapshot.hasError}');
               }
               final data = snapshot.data;
-              if (data == null || data.isEmpty) {
+              if (data == null) {
                 return Text('해당 데이터가 없습니다');
               }
               return _buildEvaluationsList(data);
@@ -43,21 +52,16 @@ class EvaluationHistoryView extends ConsumerWidget {
   }
 }
 
-Widget _buildEvaluationsList(List<EvaluationModel> data) {
+Widget _buildEvaluationsList(EvaluationModel data) {
   return Column(
-    children:
-        data.map((e) {
-          return Column(
-            children: [
-              Text('Region : ${e.region}'),
-              Text('Action : ${e.action}'),
-              Text('ROM : ${e.rom}'),
-              Text('VAS : ${e.vas}'),
-              Text('Hx : ${e.hx}'),
-              Text('Sx : ${e.sx}'),
-              Divider(),
-            ],
-          );
-        }).toList(),
+    children: [
+      Text('Region : ${data.region}'),
+      Text('Action : ${data.action}'),
+      Text('ROM : ${data.rom}'),
+      Text('VAS : ${data.vas}'),
+      Text('Hx : ${data.hx}'),
+      Text('Sx : ${data.sx}'),
+      Divider(),
+    ],
   );
 }

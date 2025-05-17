@@ -1,11 +1,11 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, use_build_context_synchronously
 
 import 'package:chart/model/model/evlauation/evaluation_field_model.dart';
-import 'package:chart/view/evaluation/evaluation_detail_view.dart';
-import 'package:chart/view/evaluation/evaluation_form_view.dart';
+import 'package:chart/ui/provider/page_provider.dart';
+import 'package:chart/view/evaluation/form/evaluation_form_view.dart';
 import 'package:chart/view/patient/patient_info/patient_info_view.dart';
 import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
-import 'package:chart/view_model/patient/patient_provider.dart';
+import 'package:chart/view_model/patient/provider/patient_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
@@ -27,27 +27,45 @@ class _FirstEvaluationViewState extends ConsumerState<FirstEvaluationView> {
   final TextEditingController _hxController = TextEditingController();
   final TextEditingController _sxController = TextEditingController();
 
-  late final List<EvaluationFieldModel> _evalField;
+  final List<EvaluationFieldModel> _evalField = [];
 
   @override
   void initState() {
     super.initState();
-    _evalField = [
-      EvaluationFieldModel(controller: _regionController, hintText: 'Region'),
-      EvaluationFieldModel(controller: _actionController, hintText: 'Action'),
+    _evalField.addAll([
+      EvaluationFieldModel(
+        controller: _regionController,
+        label: 'Region',
+        hintText: 'Region',
+      ),
+      EvaluationFieldModel(
+        controller: _actionController,
+        label: 'Action',
+        hintText: 'Action',
+      ),
       EvaluationFieldModel(
         controller: _romController,
+        label: 'ROM',
         hintText: 'ROM',
         inputType: TextInputType.number,
       ),
       EvaluationFieldModel(
         controller: _vasController,
+        label: 'VAS',
         hintText: 'VAS',
         inputType: TextInputType.number,
       ),
-      EvaluationFieldModel(controller: _hxController, hintText: 'hx'),
-      EvaluationFieldModel(controller: _sxController, hintText: 'sx'),
-    ];
+      EvaluationFieldModel(
+        controller: _hxController,
+        label: 'Hx',
+        hintText: 'Hx',
+      ),
+      EvaluationFieldModel(
+        controller: _sxController,
+        label: 'Sx',
+        hintText: 'Sx',
+      ),
+    ]);
   }
 
   @override
@@ -66,7 +84,7 @@ class _FirstEvaluationViewState extends ConsumerState<FirstEvaluationView> {
     final patient = ref.watch(patientProvider);
     final patientId = ref.watch(patientIdProvider);
 
-    if (patientId == null) {
+    if (patientId == null || patient == null) {
       return Scaffold(body: Center(child: Text('환자가 없습니다')));
     }
 
@@ -79,17 +97,15 @@ class _FirstEvaluationViewState extends ConsumerState<FirstEvaluationView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            PatientInfoView(patient: patient!),
+            PatientInfoView(patient: patient),
             EvaluationFormView(
               fields: _evalField,
               formKey: _evalformKey,
               onSubmit: () async {
                 try {
                   await vmProvider.submitEval(fields: _evalField);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => EvaluationDetailView()),
-                  );
+                  ref.read(currentPageProvider.notifier).state =
+                      Pages.patientIntroduce;
                 } catch (err) {
                   throw Exception('에러 발생 : $err');
                 }

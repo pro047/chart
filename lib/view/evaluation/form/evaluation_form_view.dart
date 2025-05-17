@@ -25,7 +25,10 @@ class EvaluationFormView extends ConsumerWidget {
             ...fields.map(
               (field) => TextFormField(
                 controller: field.controller,
-                decoration: InputDecoration(hintText: field.hintText),
+                decoration: InputDecoration(
+                  labelText: field.label,
+                  hintText: field.hintText,
+                ),
                 keyboardType: field.inputType,
               ),
             ),

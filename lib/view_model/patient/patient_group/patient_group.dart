@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:chart/model/model/patient/patient_model.dart';
 import 'package:chart/model/repository/patient/patient_repository.dart';
-import 'package:chart/view_model/patient/hangul_parser.dart';
+import 'package:chart/view_model/patient/lib/hangul_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 List<PatientModel> sortedByInitial(List<PatientModel> patient) {
