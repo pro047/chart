@@ -40,6 +40,7 @@ class PatientDatasource {
 
   Future<void> deletePatientInfo(int id) async {
     final db = await DatabaseHelper.instance.database;
+    print('삭제 성공 : $id');
     await db.delete('patients', where: 'id = ?', whereArgs: [id]);
   }
 }

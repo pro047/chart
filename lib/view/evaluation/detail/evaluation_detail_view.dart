@@ -1,13 +1,14 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chart/model/model/evlauation/evaluation_model.dart';
-import 'package:chart/ui/provider/page_provider.dart';
+import 'package:chart/view/evaluation/crud/evaluation_add_view.dart';
+import 'package:chart/view/evaluation/crud/evaluation_delete_view.dart';
 import 'package:chart/view/evaluation/crud/evaluation_edit_view.dart';
 import 'package:chart/view/evaluation/detail/evaluation_history_view.dart';
 import 'package:chart/view/patient/patient_info/patient_info_view.dart';
 import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
 import 'package:chart/view_model/patient/provider/patient_provider.dart';
 import 'package:chart/view_model/patient/provider/round_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EvaluationDetailView extends ConsumerWidget {
   const EvaluationDetailView({super.key});
@@ -31,8 +32,7 @@ class EvaluationDetailView extends ConsumerWidget {
         title: Text('$round회차'),
         leading: IconButton(
           onPressed: () {
-            ref.read(currentPageProvider.notifier).state =
-                Pages.patientIntroduce;
+            Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back),
         ),
@@ -41,8 +41,10 @@ class EvaluationDetailView extends ConsumerWidget {
             onSelected: (value) {
               switch (value) {
                 case 'add':
-                  ref.read(currentPageProvider.notifier).state =
-                      Pages.addEvaluation;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => EvaluationAddView()),
+                  );
                 case 'edit':
                   if (eval != null) {
                     Navigator.push(
@@ -54,32 +56,37 @@ class EvaluationDetailView extends ConsumerWidget {
                   } else {
                     showDialog(
                       context: context,
-                      builder:
-                          (context) => AlertDialog(
-                            title: Text('알림'),
-                            content: Text('해당 회차의 평가가 없습니다'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text('확인'),
-                              ),
-                            ],
+                      builder: (context) => AlertDialog(
+                        title: Text('알림'),
+                        content: Text('해당 회차의 평가가 없습니다'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('확인'),
                           ),
+                        ],
+                      ),
                     );
                   }
                   break;
                 case 'delete':
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) {
+                      return EvaluationDeleteDialog();
+                    },
+                  );
                   break;
               }
             },
-            itemBuilder:
-                (_) => [
-                  PopupMenuItem(value: 'add', child: Text('추가')),
-                  PopupMenuItem(value: 'edit', child: Text('수정')),
-                  PopupMenuItem(value: 'delete', child: Text('삭제')),
-                ],
+            itemBuilder: (_) => [
+              PopupMenuItem(value: 'add', child: Text('추가')),
+              PopupMenuItem(value: 'edit', child: Text('수정')),
+              PopupMenuItem(value: 'delete', child: Text('삭제')),
+            ],
           ),
         ],
       ),

@@ -1,3 +1,6 @@
+import 'package:chart/ui/lib/app_bar.dart';
+import 'package:chart/view/patient/lib/patient_drawer_view.dart';
+import 'package:chart/view/patient/lib/patient_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chart/view/patient/dialog/patient_dialog.dart';
@@ -10,10 +13,11 @@ class PatientView extends ConsumerStatefulWidget {
 }
 
 class _PatientViewState extends ConsumerState<PatientView> {
-  final TextEditingController _inputController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: appbar(context, ref),
+      drawer: PatientDrawer(),
       body: Padding(
         padding: EdgeInsets.all(10),
         child: Column(
@@ -31,19 +35,10 @@ class _PatientViewState extends ConsumerState<PatientView> {
               },
               child: Text('환자추가하기'),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 200,
-                    child: TextField(
-                      controller: _inputController,
-                      decoration: InputDecoration(hintText: '환자 이름으로 검색'),
-                    ),
-                  ),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-                ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: PatientSearch(),
               ),
             ),
           ],

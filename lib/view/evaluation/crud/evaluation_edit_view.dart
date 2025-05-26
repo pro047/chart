@@ -1,6 +1,5 @@
 import 'package:chart/model/model/evlauation/evaluation_field_model.dart';
 import 'package:chart/model/model/evlauation/evaluation_model.dart';
-import 'package:chart/ui/provider/page_provider.dart';
 import 'package:chart/view/evaluation/form/evaluation_form_view.dart';
 import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -87,17 +86,22 @@ class _EvaluationEditViewState extends ConsumerState<EvaluationEditView> {
         fields: fields,
         formKey: _editEvalFormKey,
         onSubmit: () async {
-          if (_editEvalFormKey.currentState!.validate()) {
-            final updated = widget.eval.copyWith(
-              region: _controllers[0].text,
-              action: _controllers[1].text,
-              rom: int.tryParse(_controllers[2].text),
-              vas: int.tryParse(_controllers[3].text),
-              hx: _controllers[4].text,
-              sx: _controllers[5].text,
-            );
-            await evalProvider.updateEvaluation(updated);
-            ref.read(currentPageProvider.notifier).state = Pages.patient;
+          try {
+            if (_editEvalFormKey.currentState!.validate()) {
+              final updated = widget.eval.copyWith(
+                region: _controllers[0].text,
+                action: _controllers[1].text,
+                rom: int.tryParse(_controllers[2].text),
+                vas: int.tryParse(_controllers[3].text),
+                hx: _controllers[4].text,
+                sx: _controllers[5].text,
+              );
+              await evalProvider.updateEvaluation(updated);
+              Navigator.pop(context);
+            }
+          } catch (err) {
+            print('edit error : $err');
+            throw Exception('수정 실패');
           }
         },
       ),

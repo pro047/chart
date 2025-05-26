@@ -84,10 +84,17 @@ class EvaluationDatasource {
     }
   }
 
-  Future<void> deleteEvaluation(int id) async {
+  Future<void> deleteEvaluationByPatientIdAndEvaluationId(
+    int patientId,
+    int evalId,
+  ) async {
     try {
       final db = await DatabaseHelper.instance.database;
-      await db.delete('evaluations', where: 'patientId = ?', whereArgs: [id]);
+      await db.delete(
+        'evaluations',
+        where: 'patientId =? AND id = ?',
+        whereArgs: [patientId, evalId],
+      );
     } catch (err) {
       print('deleteEvaluaion error : $err');
       rethrow;
@@ -102,19 +109,41 @@ class EvaluationDatasource {
         [patientId],
       );
 
-      if (result.isEmpty) {
+      if (result.isEmpty || result.first['maxRound'] == null) {
         return 0;
       }
 
       final maxRoundValue = result.first['maxRound'];
-      final maxRound =
-          maxRoundValue is int
-              ? maxRoundValue
-              : int.parse(maxRoundValue.toString());
+      final maxRound = maxRoundValue is int
+          ? maxRoundValue
+          : int.parse(maxRoundValue.toString());
       print('[maxround] : $maxRound');
       return maxRound;
     } catch (err) {
       print('fetchMaxRound error : $err');
+      rethrow;
+    }
+  }
+
+  Future<int?> findEvaluationIdByPatientIdAndRound(
+    int patientId,
+    int round,
+  ) async {
+    try {
+      final db = await DatabaseHelper.instance.database;
+      final result = await db.query(
+        'evaluations',
+        where: 'patientId = ? AND round = ?',
+        whereArgs: [patientId, round],
+        limit: 1,
+      );
+
+      if (result.isEmpty) {
+        return null;
+      }
+      return result.first['id'] as int;
+    } catch (err) {
+      print('findEvaluationByPatientIdAndRound error : $err');
       rethrow;
     }
   }

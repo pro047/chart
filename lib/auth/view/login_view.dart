@@ -1,6 +1,5 @@
 import 'package:chart/auth/view/signup_view.dart';
 import 'package:chart/auth/view_model/login_view_model.dart';
-import 'package:chart/ui/layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -61,25 +60,21 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         print('email: ${emailContoller.text}');
                         print('password: ${passwordContoller.text}');
                         print('loginstate: $loginState');
-                        Navigator.of(
-                          context,
-                        ).push(MaterialPageRoute(builder: (_) => Layout()));
                       } catch (err) {
                         showDialog(
                           context: context,
-                          builder:
-                              (context) => AlertDialog(
-                                title: Text('로그인 실패'),
-                                content: Text('아이디/비밀번호를 확인해주세요'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text('확인'),
-                                  ),
-                                ],
+                          builder: (context) => AlertDialog(
+                            title: Text('로그인 실패'),
+                            content: Text('아이디/비밀번호를 확인해주세요'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('확인'),
                               ),
+                            ],
+                          ),
                         );
                       }
                     },

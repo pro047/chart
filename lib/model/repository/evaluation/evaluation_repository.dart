@@ -29,12 +29,28 @@ class EvaluationRepository {
     await _datasource.updateEvaluation(eval);
   }
 
-  Future<void> deleteEvaluation(int id) async {
-    await _datasource.deleteEvaluation(id);
+  Future<void> deleteEvaluationByPatientIdAndEvaluationId(
+    int patientId,
+    int evalId,
+  ) async {
+    await _datasource.deleteEvaluationByPatientIdAndEvaluationId(
+      patientId,
+      evalId,
+    );
   }
 
   Future<int> getMaxRound(int patientId) async {
     return await _datasource.fetchMaxRound(patientId);
+  }
+
+  Future<int?> findEvaluationIdByPatientIdAndRound(
+    int patientId,
+    int round,
+  ) async {
+    return await _datasource.findEvaluationIdByPatientIdAndRound(
+      patientId,
+      round,
+    );
   }
 }
 

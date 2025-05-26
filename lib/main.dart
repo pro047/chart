@@ -1,9 +1,7 @@
-import 'package:chart/auth/view/login_view.dart';
-import 'package:chart/auth/view_model/auth_state_provider.dart';
-import 'package:chart/config/db.dart';
-import 'package:chart/ui/layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chart/config/db.dart';
+import 'package:chart/ui/layout.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,11 +19,12 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isLoggedIn = ref.watch(authStateProvider).isLoggedIn;
-
     return MaterialApp(
+      theme: ThemeData(
+        drawerTheme: DrawerThemeData(backgroundColor: Colors.white),
+      ),
       debugShowCheckedModeBanner: false,
-      home: isLoggedIn ? Layout() : LoginView(),
+      home: const Layout(),
     );
   }
 }

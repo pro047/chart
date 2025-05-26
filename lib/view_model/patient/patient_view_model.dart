@@ -35,6 +35,7 @@ class PatientViewModel extends AsyncNotifier<List<PatientModel>> {
   Future<void> deleteInfo(int id) async {
     await _repository.deletePatientInfo(id);
     state = AsyncData([...state.value!..removeWhere((e) => e.id == id)]);
+    await _repository.fetchAllPatientInfo();
   }
 }
 

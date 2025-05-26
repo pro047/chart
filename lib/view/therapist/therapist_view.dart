@@ -1,3 +1,5 @@
+import 'package:chart/auth/view/login_view.dart';
+import 'package:chart/auth/view_model/auth_state_provider.dart';
 import 'package:chart/view_model/therapist/therapist_name_view_model.dart';
 import 'package:chart/view_model/therapist/therapist_todolist_view_model.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +35,22 @@ class _TherapistViewState extends ConsumerState<TherapistView> {
 
     // ignore: avoid_unnecessary_containers
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text('chartpt'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => LoginView()),
+                (route) => false,
+              );
+              ref.read(authStateProvider.notifier).logout();
+            },
+            icon: Icon(Icons.logout),
+          ),
+        ],
+      ),
       body: Padding(
         padding: EdgeInsets.all(10),
         child: Column(
@@ -44,100 +62,95 @@ class _TherapistViewState extends ConsumerState<TherapistView> {
               icon: Icon(Icons.add),
             ),
             todoState.when(
-              data:
-                  (todoList) => Expanded(
-                    child: Builder(
-                      builder: (context) {
-                        final ids = todoList.map((i) => i.id).toSet();
-                        // ignore: no_leading_underscores_for_local_identifiers
-                        final _controllersIds = _controllers.keys.toSet();
-                        for (final id in ids.difference(_controllersIds)) {
-                          final todo = todoList.firstWhere((i) => i.id == id);
-                          _controllers[id] = TextEditingController(
-                            text: todo.text,
-                          );
-                        }
-                        for (final id in _controllersIds.difference(ids)) {
-                          _controllers.remove(id)?.dispose();
-                        }
-                        return ListView.builder(
-                          itemCount: todoList.length,
-                          itemBuilder: (context, int index) {
-                            final todo = todoList[index];
-                            final id = todo.id;
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Column(
-                                children: [
-                                  todo.isConfirm
-                                      ? Text(todo.text)
-                                      : TextField(
-                                        controller: _controllers[id],
-                                        decoration: InputDecoration(
-                                          hintText: 'to do',
-                                        ),
+              data: (todoList) => Expanded(
+                child: Builder(
+                  builder: (context) {
+                    final ids = todoList.map((i) => i.id).toSet();
+                    // ignore: no_leading_underscores_for_local_identifiers
+                    final _controllersIds = _controllers.keys.toSet();
+                    for (final id in ids.difference(_controllersIds)) {
+                      final todo = todoList.firstWhere((i) => i.id == id);
+                      _controllers[id] = TextEditingController(text: todo.text);
+                    }
+                    for (final id in _controllersIds.difference(ids)) {
+                      _controllers.remove(id)?.dispose();
+                    }
+                    return ListView.builder(
+                      itemCount: todoList.length,
+                      itemBuilder: (context, int index) {
+                        final todo = todoList[index];
+                        final id = todo.id;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Column(
+                            children: [
+                              todo.isConfirm
+                                  ? Text(todo.text)
+                                  : TextField(
+                                      controller: _controllers[id],
+                                      decoration: InputDecoration(
+                                        hintText: 'to do',
                                       ),
-                                  SizedBox(
-                                    width: 200,
-                                    child: Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            therapistTodo.updateTodoText(
-                                              id,
-                                              _controllers[id]!.text,
-                                            );
-                                            therapistTodo.updateTodoConfirm(
-                                              id,
-                                              true,
-                                            );
-                                          },
-                                          icon: Icon(Icons.check),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            therapistTodo.updateTodoConfirm(
-                                              id,
-                                              false,
-                                            );
-                                            therapistTodo.updateTodoText(
-                                              id,
-                                              _controllers[id]!.text,
-                                            );
-                                          },
-                                          icon: Icon(Icons.edit),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            therapistTodo.deleteTodoByID(id);
-                                            setState(() {
-                                              _controllers
-                                                  .remove(id)
-                                                  ?.dispose();
-                                            });
-                                          },
-                                          icon: Icon(Icons.delete),
-                                        ),
-                                        Checkbox(
-                                          value: todo.isDone,
-                                          onChanged: (bool? value) {
-                                            therapistTodo.updateTodoDone(
-                                              id,
-                                              value!,
-                                            );
-                                          },
-                                        ),
-                                      ],
                                     ),
-                                  ),
-                                ],
+                              SizedBox(
+                                width: 200,
+                                child: Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        therapistTodo.updateTodoText(
+                                          id,
+                                          _controllers[id]!.text,
+                                        );
+                                        therapistTodo.updateTodoConfirm(
+                                          id,
+                                          true,
+                                        );
+                                      },
+                                      icon: Icon(Icons.check),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        therapistTodo.updateTodoConfirm(
+                                          id,
+                                          false,
+                                        );
+                                        therapistTodo.updateTodoText(
+                                          id,
+                                          _controllers[id]!.text,
+                                        );
+                                      },
+                                      icon: Icon(Icons.edit),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        therapistTodo.deleteTodoByID(id);
+                                        setState(() {
+                                          _controllers.remove(id)?.dispose();
+                                        });
+                                      },
+                                      icon: Icon(Icons.delete),
+                                    ),
+                                    Checkbox(
+                                      value: todo.isDone,
+                                      onChanged: (bool? value) {
+                                        therapistTodo.updateTodoDone(
+                                          id,
+                                          value!,
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
-                            );
-                          },
+                            ],
+                          ),
                         );
                       },
-                    ),
-                  ),
+                    );
+                  },
+                ),
+              ),
               loading: () => Center(child: CircularProgressIndicator()),
               error: (e, st) => Center(child: Text('error: $e')),
             ),

@@ -22,20 +22,38 @@ class EvaluationViewModel
     return await _repository.getEvaluaionByPatientIdAndRound(patientId, round);
   }
 
-  Future<void> updateEvaluation(EvaluationModel eval) async {
-    await _repository.updateEvaluation(eval);
-    final currentList = state.valueOrNull ?? [];
-    final index = currentList.indexWhere((e) => e.id == eval.id);
-    if (index != -1) {
-      final newList = [...currentList];
-      newList[index] = eval;
-      state = AsyncData(newList);
+  Future<void> updateEvaluation(EvaluationModel updatedEval) async {
+    try {
+      await _repository.updateEvaluation(updatedEval);
+
+      final currentList = state.valueOrNull;
+      if (currentList == null) return;
+      print('currentList : $currentList');
+
+      final updatedList = currentList.map((e) {
+        return e.id == updatedEval.id ? updatedEval : e;
+      }).toList();
+
+      state = AsyncData(updatedList);
+    } catch (err, st) {
+      print('updateEvaluation Error : $err');
+      state = AsyncError(err, st);
+      throw Exception('Failed update');
     }
   }
 
-  Future<void> deleteEvaluation(int id) async {
-    await _repository.deleteEvaluation(id);
-    state = AsyncData([...state.value!..removeWhere((e) => e.id == id)]);
+  Future<void> deleteEvaluationByPatientIdAndEvaluationId(
+    int patientId,
+    int evalId,
+  ) async {
+    await _repository.deleteEvaluationByPatientIdAndEvaluationId(
+      patientId,
+      evalId,
+    );
+
+    final newList = await _repository.getEvaluationById(patientId);
+    print('newList : $newList');
+    state = AsyncData(newList);
   }
 
   Map<int?, List<EvaluationModel>> groupedEvals(EvaluationModel eval) {
@@ -81,10 +99,30 @@ class EvaluationViewModel
 
     state = AsyncData([...state.valueOrNull ?? [], evalWithRound]);
   }
+
+  Future<int?> findEvaluationIdByPatientIdAndRound(
+    int patientId,
+    int round,
+  ) async {
+    try {
+      final evalId = await _repository.findEvaluationIdByPatientIdAndRound(
+        patientId,
+        round,
+      );
+      if (evalId == null) {
+        throw Exception('해당 평가 기록은 없습니다');
+      }
+      return evalId;
+    } catch (err) {
+      print('findEvaluationIdByPatientIdAndRound ViewModel error : $err');
+      throw Exception('에러가 발생했습니다');
+    }
+  }
 }
 
-final evaluationViewModelProvider = AsyncNotifierProvider.family<
-  EvaluationViewModel,
-  List<EvaluationModel>,
-  int
->(EvaluationViewModel.new);
+final evaluationViewModelProvider =
+    AsyncNotifierProvider.family<
+      EvaluationViewModel,
+      List<EvaluationModel>,
+      int
+    >(EvaluationViewModel.new);

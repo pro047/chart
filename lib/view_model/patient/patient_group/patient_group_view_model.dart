@@ -38,12 +38,26 @@ class GroupedPatientsInitial extends AsyncNotifier<List<PatientModel>> {
     return await _repository.fetchAllPatientInfo();
   }
 
-  void addPatientList(PatientModel patient) async {
-    if (state case AsyncData(:final value)) {
-      state = await AsyncValue.guard(() async {
-        print('value: $value');
-        return await _repository.fetchAllPatientInfo();
-      });
+  void addPatientInList(PatientModel patient) async {
+    try {
+      if (state case AsyncData(:final value)) {
+        if (value.any((e) => e.id == patient.id)) return;
+        state = AsyncData([...value, patient]);
+      }
+    } catch (err, st) {
+      state = AsyncError(err, st);
+      throw Exception('추가 실패 : $err');
+    }
+  }
+
+  void deletePatientInList(int patientId) async {
+    try {
+      if (state case AsyncData(:final value)) {
+        state = AsyncData(value.where((e) => e.id != patientId).toList());
+      }
+    } catch (err, st) {
+      state = AsyncError(err, st);
+      throw Exception('삭제 실패  $err');
     }
   }
 }
@@ -53,15 +67,14 @@ final groupedPatientsInitialProvider =
       return GroupedPatientsInitial();
     });
 
-final groupedPatientsMapProvider = Provider<Map<String, List<PatientModel>>>((
-  ref,
-) {
-  print('called gpmp');
-  final patients = ref.watch(groupedPatientsInitialProvider);
-  print(patients);
-  if (!patients.hasValue) {
-    throw Exception('no data in gpmp');
-  }
+final groupedPatientsMapProvider =
+    Provider<AsyncValue<Map<String, List<PatientModel>>>>((ref) {
+      print('called gpmp');
+      final patients = ref.watch(groupedPatientsInitialProvider);
 
-  return groupByInitial(patients.value!);
-});
+      return patients.when(
+        data: (list) => AsyncData(groupByInitial(list)),
+        error: (e, st) => AsyncError(e, st),
+        loading: () => AsyncLoading(),
+      );
+    });

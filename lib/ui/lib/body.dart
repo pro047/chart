@@ -1,32 +1,48 @@
-import 'package:chart/model/model/patient/patient_model.dart';
-import 'package:chart/ui/provider/page_provider.dart';
-import 'package:chart/view/evaluation/crud/evaluation_add_view.dart';
-import 'package:chart/view/evaluation/detail/evaluation_detail_view.dart';
-import 'package:chart/view/patient/patient_info/patient_introduce_view.dart';
+import 'package:chart/ui/lib/tab_keys.dart';
+import 'package:chart/ui/provider/tab_provider.dart';
 import 'package:chart/view/patient/patient_main_view.dart';
 import 'package:chart/view/plan/plan.dart';
 import 'package:chart/view/therapist/therapist_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Widget layoutBodyPages(Pages currentPage, PatientModel? patient) {
-  switch (currentPage) {
-    case Pages.therapist:
-      return TherapistView();
-    case Pages.patient:
-      return PatientView();
-    case Pages.plan:
-      return Plan();
-    case Pages.patientIntroduce:
-      return _requiredPatietnPage(patient, () => PatientIntroduceView());
-    case Pages.evaluationDetail:
-      return _requiredPatietnPage(patient, () => EvaluationDetailView());
-    case Pages.addEvaluation:
-      return _requiredPatietnPage(patient, () => EvaluationAddView());
+class BodyLayout extends ConsumerWidget {
+  const BodyLayout({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentIndex = ref.watch(currentTabProvider);
+
+    print('body layout build');
+    print('patientKey: ${Tabkeys.patientKey}');
+    print('therapistKey: ${Tabkeys.therapistKey}');
+    print('planKey: ${Tabkeys.planKey}');
+
+    return IndexedStack(
+      index: currentIndex,
+      children: [
+        _buildTabNavigator(
+          key: Tabkeys.therapistKey,
+          initialPage: const TherapistView(),
+        ),
+        _buildTabNavigator(
+          key: Tabkeys.patientKey,
+          initialPage: const PatientView(),
+        ),
+        _buildTabNavigator(key: Tabkeys.planKey, initialPage: const Plan()),
+      ],
+    );
   }
 }
 
-Widget _requiredPatietnPage(PatientModel? patient, Function() builder) {
-  return patient != null
-      ? builder()
-      : Center(child: Text('please select patient'));
+Widget _buildTabNavigator({
+  required GlobalKey<NavigatorState> key,
+  required Widget initialPage,
+}) {
+  return Navigator(
+    key: key,
+    onGenerateRoute: (settings) {
+      return MaterialPageRoute(builder: (_) => initialPage);
+    },
+  );
 }

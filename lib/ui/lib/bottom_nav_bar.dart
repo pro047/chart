@@ -1,19 +1,12 @@
-import 'package:chart/ui/provider/page_provider.dart';
+import 'package:chart/ui/provider/tab_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const bottomNavPages = [Pages.therapist, Pages.patient, Pages.plan];
-
-Widget bottomNavbar(Pages currentPage, WidgetRef ref) {
-  final currentIndex =
-      bottomNavPages.contains(currentPage)
-          ? bottomNavPages.indexOf(currentPage)
-          : 0;
-
+Widget bottomNavbar(int currentIndex, WidgetRef ref) {
   return BottomNavigationBar(
     currentIndex: currentIndex,
     onTap: (index) {
-      ref.read(currentPageProvider.notifier).state = bottomNavPages[index];
+      ref.read(currentTabProvider.notifier).state = index;
     },
     items: [
       BottomNavigationBarItem(

@@ -1,5 +1,6 @@
-import 'package:chart/ui/provider/page_provider.dart';
+import 'package:chart/view/evaluation/crud/evaluation_add_view.dart';
 import 'package:chart/view/evaluation/detail/chart_view.dart';
+import 'package:chart/view/patient/dialog/patient_delete_dialog.dart';
 import 'package:chart/view/patient/lib/round_dropdown.dart';
 import 'package:chart/view/patient/patient_info/patient_info_view.dart';
 import 'package:chart/view_model/patient/provider/patient_provider.dart';
@@ -12,13 +13,18 @@ class PatientIntroduceView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final patient = ref.watch(patientProvider);
+    print('[debug] patient state : $patient');
+
+    if (patient == null) {
+      throw Exception('해당하는 환자가 없습니다');
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${patient!.name} 님'),
+        title: Text('${patient.name} 님'),
         leading: IconButton(
           onPressed: () {
-            ref.read(currentPageProvider.notifier).state = Pages.patient;
+            Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back),
         ),
@@ -27,18 +33,26 @@ class PatientIntroduceView extends ConsumerWidget {
             onSelected: (value) {
               switch (value) {
                 case 'add':
-                  ref.read(currentPageProvider.notifier).state =
-                      Pages.addEvaluation;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => EvaluationAddView()),
+                  );
                   break;
                 case 'delete':
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) {
+                      return PatientDeleteDialog();
+                    },
+                  );
                   break;
               }
             },
-            itemBuilder:
-                (_) => [
-                  PopupMenuItem(value: 'add', child: Text('추가')),
-                  PopupMenuItem(value: 'delete', child: Text('삭제')),
-                ],
+            itemBuilder: (_) => [
+              PopupMenuItem(value: 'add', child: Text('추가')),
+              PopupMenuItem(value: 'delete', child: Text('삭제')),
+            ],
           ),
         ],
       ),
@@ -48,7 +62,7 @@ class PatientIntroduceView extends ConsumerWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                PatientInfoView(patient: patient),
+                PatientInfoView(patient: patient, showName: false),
                 SizedBox(height: 300, child: ChartView()),
                 RoundDropdown(),
               ],

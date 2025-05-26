@@ -1,13 +1,12 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, use_build_context_synchronously
 
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chart/model/model/evlauation/evaluation_field_model.dart';
-import 'package:chart/ui/provider/page_provider.dart';
 import 'package:chart/view/evaluation/form/evaluation_form_view.dart';
 import 'package:chart/view/patient/patient_info/patient_info_view.dart';
 import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
 import 'package:chart/view_model/patient/provider/patient_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
 
 class FirstEvaluationView extends ConsumerStatefulWidget {
   const FirstEvaluationView({super.key});
@@ -104,8 +103,7 @@ class _FirstEvaluationViewState extends ConsumerState<FirstEvaluationView> {
               onSubmit: () async {
                 try {
                   await vmProvider.submitEval(fields: _evalField);
-                  ref.read(currentPageProvider.notifier).state =
-                      Pages.patientIntroduce;
+                  Navigator.pop(context);
                 } catch (err) {
                   throw Exception('에러 발생 : $err');
                 }
