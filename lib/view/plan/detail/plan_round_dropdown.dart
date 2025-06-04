@@ -1,31 +1,32 @@
+import 'package:chart/view/plan/detail/plan_info_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chart/view/evaluation/detail/evaluation_detail_view.dart';
-import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
+import 'package:chart/view_model/plan/plan_view_model.dart';
+import 'package:chart/view_model/plan/provider/plan_round_provider.dart';
 import 'package:chart/view_model/patient/provider/patient_provider.dart';
-import 'package:chart/view_model/patient/provider/round_provider.dart';
 
-class RoundDropdown extends ConsumerStatefulWidget {
-  const RoundDropdown({super.key});
+class PlanRoundDropdown extends ConsumerStatefulWidget {
+  const PlanRoundDropdown({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _RoundDropdownState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _PlanRoundDropdownState();
 }
 
-class _RoundDropdownState extends ConsumerState<RoundDropdown> {
+class _PlanRoundDropdownState extends ConsumerState<PlanRoundDropdown> {
   @override
   Widget build(BuildContext context) {
     final patientId = ref.watch(patientIdProvider);
 
     if (patientId == null) return Center(child: Text('No patient selected'));
 
-    final evalState = ref.watch(evaluationViewModelProvider(patientId));
-    final selectedRound = ref.watch(roundProvider);
+    final planState = ref.watch(planViewModelProvider(patientId));
+    final selectedRound = ref.watch(planRoundProvider);
 
-    return evalState.when(
+    return planState.when(
       data: (data) {
         if (data.isEmpty) {
-          return Center(child: Text('등록된 평가가 없습니다'));
+          return Center(child: Text('등록된 계획이 없습니다'));
         }
 
         final rounds = data.map((e) => e.round).toSet().toList()..sort();
@@ -35,12 +36,14 @@ class _RoundDropdownState extends ConsumerState<RoundDropdown> {
           return const Center(child: Text('회차 정보가 없습니다'));
         }
 
-        final currentRound = selectedRound ?? rounds.first;
+        final currentRound = rounds.contains(selectedRound)
+            ? selectedRound
+            : rounds.first;
         print('[currentRound] : $currentRound');
 
         if (!rounds.contains(selectedRound)) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            ref.read(roundProvider.notifier).state = rounds.first;
+            ref.read(planRoundProvider.notifier).state = rounds.first;
           });
         }
 
@@ -59,10 +62,10 @@ class _RoundDropdownState extends ConsumerState<RoundDropdown> {
               if (value != null) {
                 setState(() {
                   print('select value: $value');
-                  ref.read(roundProvider.notifier).state = value;
+                  ref.read(planRoundProvider.notifier).state = value;
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => EvaluationDetailView()),
+                    MaterialPageRoute(builder: (_) => PlanInfoView()),
                   );
                 });
               }

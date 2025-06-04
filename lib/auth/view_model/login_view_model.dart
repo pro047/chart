@@ -14,17 +14,25 @@ class LoginViewModel extends AsyncNotifier<UserModel?> {
     return null;
   }
 
-  Future<void> login(String email, String password) async {
+  Future<UserModel> login(String email, String password) async {
     state = const AsyncLoading();
 
     try {
       final user = await _loginRepository.login(email, password);
       state = AsyncData(user);
-      ref.read(authStateProvider.notifier).login();
+      ref.read(authStateProvider.notifier).login(user);
+      return user;
     } catch (e, st) {
       state = AsyncError(e, st);
       throw Exception('login failed');
     }
+  }
+
+  Future<void> logout() async {
+    state = const AsyncData(null);
+    ref.read(authStateProvider.notifier).logout();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('loggedEmail');
   }
 
   Future<void> saveLoginEmail(String email) async {

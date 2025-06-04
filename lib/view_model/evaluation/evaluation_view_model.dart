@@ -7,11 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EvaluationViewModel
     extends FamilyAsyncNotifier<List<EvaluationModel>, int> {
-  late final EvaluationRepository _repository;
+  EvaluationRepository get _repository =>
+      ref.read(evaluationRepositoryProvider);
 
   @override
   FutureOr<List<EvaluationModel>> build(int patientId) async {
-    _repository = ref.read(evaluationRepositoryProvider);
     return _repository.getEvaluationById(patientId);
   }
 
@@ -42,14 +42,11 @@ class EvaluationViewModel
     }
   }
 
-  Future<void> deleteEvaluationByPatientIdAndEvaluationId(
+  Future<void> deleteEvaluationByPatientIdAndRound(
     int patientId,
-    int evalId,
+    int round,
   ) async {
-    await _repository.deleteEvaluationByPatientIdAndEvaluationId(
-      patientId,
-      evalId,
-    );
+    await _repository.deleteEvaluationByPatientIdAndRound(patientId, round);
 
     final newList = await _repository.getEvaluationById(patientId);
     print('newList : $newList');

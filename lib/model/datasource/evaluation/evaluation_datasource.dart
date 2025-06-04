@@ -1,6 +1,6 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chart/config/db.dart';
 import 'package:chart/model/model/evlauation/evaluation_model.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 class EvaluationDatasource {
@@ -9,14 +9,9 @@ class EvaluationDatasource {
       final db = await DatabaseHelper.instance.database;
       final result = await db.query(
         'evaluations',
-        where: 'patientId = ?',
+        where: 'patient_id = ?',
         whereArgs: [patientId],
       );
-
-      if (result.isEmpty) {
-        throw Exception('평가 데이터가 없습니다 : $patientId');
-      }
-
       return result.map((e) => EvaluationModel.fromMap(e)).toList();
     } catch (err) {
       print('fetchEvaluationById error : $err');
@@ -32,7 +27,7 @@ class EvaluationDatasource {
       final db = await DatabaseHelper.instance.database;
       final result = await db.query(
         'evaluations',
-        where: 'patientId = ? AND round =?',
+        where: 'patient_id = ? AND round =?',
         whereArgs: [patientId, round],
       );
 
@@ -58,7 +53,7 @@ class EvaluationDatasource {
 
       final result = await db.query(
         'evaluations',
-        where: 'patientId = ?',
+        where: 'patient_id = ?',
         whereArgs: [eval.patientId],
       );
 
@@ -84,16 +79,16 @@ class EvaluationDatasource {
     }
   }
 
-  Future<void> deleteEvaluationByPatientIdAndEvaluationId(
+  Future<void> deleteEvaluationByPatientIdAndRound(
     int patientId,
-    int evalId,
+    int round,
   ) async {
     try {
       final db = await DatabaseHelper.instance.database;
       await db.delete(
         'evaluations',
-        where: 'patientId =? AND id = ?',
-        whereArgs: [patientId, evalId],
+        where: 'patient_id =? AND round = ?',
+        whereArgs: [patientId, round],
       );
     } catch (err) {
       print('deleteEvaluaion error : $err');
@@ -105,7 +100,7 @@ class EvaluationDatasource {
     try {
       final db = await DatabaseHelper.instance.database;
       final result = await db.rawQuery(
-        'SELECT MAX(round) AS maxRound FROM evaluations WHERE patientId = ?',
+        'SELECT MAX(round) AS maxRound FROM evaluations WHERE patient_id = ?',
         [patientId],
       );
 
@@ -133,7 +128,7 @@ class EvaluationDatasource {
       final db = await DatabaseHelper.instance.database;
       final result = await db.query(
         'evaluations',
-        where: 'patientId = ? AND round = ?',
+        where: 'patient_id = ? AND round = ?',
         whereArgs: [patientId, round],
         limit: 1,
       );

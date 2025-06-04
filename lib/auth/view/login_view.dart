@@ -1,4 +1,5 @@
 import 'package:chart/auth/view/signup_view.dart';
+import 'package:chart/auth/view_model/auth_state_provider.dart';
 import 'package:chart/auth/view_model/login_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,19 +12,27 @@ class LoginView extends ConsumerStatefulWidget {
 }
 
 class _LoginViewState extends ConsumerState<LoginView> {
-  TextEditingController emailContoller = TextEditingController();
-  TextEditingController passwordContoller = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    emailController.clear();
+    passwordController.clear();
+    super.initState();
+  }
+
+  @override
   void dispose() {
-    emailContoller.dispose();
-    passwordContoller.dispose();
+    emailController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('auth state build: ${ref.watch(authStateProvider).isLoggedIn}');
     final loginState = ref.watch(loginViewModelProvider);
     final loginViewModel = ref.read(loginViewModelProvider.notifier);
 
@@ -42,24 +51,30 @@ class _LoginViewState extends ConsumerState<LoginView> {
                 children: [
                   TextFormField(
                     decoration: InputDecoration(labelText: 'email'),
-                    controller: emailContoller,
+                    controller: emailController,
                   ),
                   TextFormField(
                     obscureText: true,
                     decoration: InputDecoration(labelText: 'password'),
-                    controller: passwordContoller,
+                    controller: passwordController,
                   ),
                   TextButton(
                     onPressed: () async {
                       try {
-                        loginViewModel.saveLoginEmail(emailContoller.text);
-                        await loginViewModel.login(
-                          emailContoller.text,
-                          passwordContoller.text,
+                        print(
+                          'auth state try: ${ref.watch(authStateProvider).isLoggedIn}',
                         );
-                        print('email: ${emailContoller.text}');
-                        print('password: ${passwordContoller.text}');
-                        print('loginstate: $loginState');
+
+                        loginViewModel.saveLoginEmail(emailController.text);
+                        final user = await loginViewModel.login(
+                          emailController.text,
+                          passwordController.text,
+                        );
+                        print('email: ${emailController.text}');
+                        print('password: ${passwordController.text}');
+                        print('loginstate: ${loginState.value}');
+
+                        ref.read(authStateProvider.notifier).login(user);
                       } catch (err) {
                         showDialog(
                           context: context,

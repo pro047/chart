@@ -1,23 +1,23 @@
+import 'package:chart/view/plan/detail/plan_info_view.dart';
+import 'package:chart/view_model/patient/provider/patient_provider.dart';
+import 'package:chart/view_model/plan/plan_view_model.dart';
+import 'package:chart/view_model/plan/provider/plan_round_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
-import 'package:chart/view_model/patient/provider/patient_provider.dart';
-import 'package:chart/view_model/evaluation/provider/eval_round_provider.dart';
 
-class EvaluationDeleteDialog extends ConsumerStatefulWidget {
-  const EvaluationDeleteDialog({super.key});
+class PlanDeleteDialog extends ConsumerStatefulWidget {
+  const PlanDeleteDialog({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _EvaluationDeleteDialogState();
+      _PlanDeleteDialogState();
 }
 
-class _EvaluationDeleteDialogState
-    extends ConsumerState<EvaluationDeleteDialog> {
+class _PlanDeleteDialogState extends ConsumerState<PlanDeleteDialog> {
   @override
   Widget build(BuildContext context) {
     final patientId = ref.watch(patientIdProvider);
-    final round = ref.watch(evalRoundProvider);
+    final round = ref.watch(planRoundProvider);
 
     if (patientId == null || round == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -26,9 +26,7 @@ class _EvaluationDeleteDialogState
       return SizedBox.shrink();
     }
 
-    final evalProvider = ref.read(
-      evaluationViewModelProvider(patientId).notifier,
-    );
+    final planProvider = ref.read(planViewModelProvider(patientId).notifier);
 
     return AlertDialog(
       title: Text('삭제'),
@@ -37,27 +35,20 @@ class _EvaluationDeleteDialogState
         TextButton(
           onPressed: () async {
             try {
-              final evalId = await evalProvider
-                  .findEvaluationIdByPatientIdAndRound(patientId, round);
-
-              print('evalId in evaldeleteview : $evalId');
-              if (evalId == null) {
-                throw Exception('해당 회차가 없습니다');
-              }
-              await evalProvider.deleteEvaluationByPatientIdAndRound(
-                patientId,
-                round,
-              );
+              await planProvider.deletePlan(patientId, round);
 
               if (context.mounted) {
-                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => PlanInfoView()),
+                );
               }
             } catch (err) {
               if (context.mounted) {
                 showDialog(
                   context: context,
                   builder: (_) => AlertDialog(
-                    title: Text('에러 발생'),
+                    title: Text('삭제 실패'),
                     content: Text(err.toString()),
                     actions: [
                       TextButton(
@@ -72,7 +63,6 @@ class _EvaluationDeleteDialogState
           },
           child: Text('삭제'),
         ),
-
         TextButton(onPressed: () => Navigator.pop(context), child: Text('취소')),
       ],
     );

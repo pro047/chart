@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 
 class DatabaseHelper {
   static const _databaseName = 'chartpt.db';
-  static const _databaseVersion = 5;
+  static const _databaseVersion = 7;
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -27,24 +27,16 @@ class DatabaseHelper {
         );
 
         await db.execute(
-          'CREATE TABLE patients (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, age INTEGER NOT NULL,gender TEXT NOT NULL, firstVisit TEXT NOT NULL, occupation TEXT DEFAULT "Unknown")',
+          'CREATE TABLE patients (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, age INTEGER NOT NULL,gender TEXT NOT NULL, firstVisit TEXT NOT NULL, occupation TEXT)',
         );
-        try {
-          await db.execute(
-            'CREATE TABLE evaluations (id INTEGER PRIMARY KEY AUTOINCREMENT, createdAt TEXT DEFAULT CURRENT_TIMESTAMP,patientId INTEGER NOT NULL, round INTEGER NOT NULL,rom INTEGER, vas INTEGER, region TEXT, action TEXT, hx TEXT, sx TEXT, FOREIGN KEY (patientId) REFERENCES patients(id) ON DELETE CASCADE)',
-          );
-          print('테이블 생성 성공');
-        } catch (e) {
-          print('$e');
-        }
-      },
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 4) {
-          await db.execute(
-            'ALTER TABLE evaluations ADD COLUMN createdAt TEXT DEFATULT CURRENT_TIMESTAMP',
-          );
-          print('db 업그레이드 완료 : 컬럼 추가 됨');
-        }
+
+        await db.execute(
+          'CREATE TABLE evaluations (id INTEGER PRIMARY KEY AUTOINCREMENT, createdAt TEXT DEFAULT CURRENT_TIMESTAMP, patient_id INTEGER NOT NULL, round INTEGER NOT NULL, rom INTEGER, vas INTEGER, region TEXT, action TEXT, hx TEXT, sx TEXT, FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE)',
+        );
+
+        await db.execute(
+          'CREATE TABLE plans (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, patient_id INTEGER NOT NULL,round INTEGER NOT NULL, stg TEXT, ltg TEXT, treatment_plan TEXT, exercise_plan TEXT, homework TEXT, FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE)',
+        );
       },
     );
   }

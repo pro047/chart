@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chart/model/model/therapist/therapist_todolist_model.dart';
 
@@ -17,3 +18,7 @@ class TherapistTodolistDatasource {
     await prefs.setStringList('todoList', encodedList);
   }
 }
+
+final therapistTodolistDatasourceProvider = Provider(
+  (ref) => TherapistTodolistDatasource(),
+);

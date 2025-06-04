@@ -1,7 +1,7 @@
-import 'package:chart/auth/view/login_view.dart';
-import 'package:chart/auth/view_model/auth_state_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chart/auth/view/login_view.dart';
+import 'package:chart/auth/view_model/auth_state_provider.dart';
 import 'package:chart/ui/lib/body.dart';
 import 'package:chart/ui/lib/bottom_nav_bar.dart';
 import 'package:chart/ui/provider/tab_provider.dart';

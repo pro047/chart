@@ -54,7 +54,7 @@ class EvaluationModel {
   factory EvaluationModel.fromMap(Map<String, dynamic> map) {
     return EvaluationModel(
       id: map['id'],
-      patientId: map['patientId'],
+      patientId: map['patient_id'],
       round: map['round'],
       region: map['region'],
       rom: map['rom'],
@@ -69,7 +69,7 @@ class EvaluationModel {
   Map<String, dynamic> toMap({bool includeId = true}) {
     final formatter = DateFormat('yyyyMMdd');
     final map = {
-      'patientId': patientId,
+      'patient_id': patientId,
       'round': round,
       'region': region,
       'rom': rom,

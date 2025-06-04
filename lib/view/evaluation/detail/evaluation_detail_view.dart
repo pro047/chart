@@ -1,14 +1,16 @@
+import 'package:chart/view/evaluation/detail/evaluation_round_dropdown.dart';
+import 'package:chart/view/patient/patient_info/patient_introduce_view.dart';
+import 'package:chart/view_model/evaluation/provider/eval_round_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chart/model/model/evlauation/evaluation_model.dart';
 import 'package:chart/view/evaluation/crud/evaluation_add_view.dart';
 import 'package:chart/view/evaluation/crud/evaluation_delete_view.dart';
 import 'package:chart/view/evaluation/crud/evaluation_edit_view.dart';
-import 'package:chart/view/evaluation/detail/evaluation_history_view.dart';
+import 'package:chart/view/evaluation/detail/evaluation_info_view.dart';
 import 'package:chart/view/patient/patient_info/patient_info_view.dart';
 import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
 import 'package:chart/view_model/patient/provider/patient_provider.dart';
-import 'package:chart/view_model/patient/provider/round_provider.dart';
 
 class EvaluationDetailView extends ConsumerWidget {
   const EvaluationDetailView({super.key});
@@ -21,22 +23,45 @@ class EvaluationDetailView extends ConsumerWidget {
     if (patient == null || patientId == null) {
       return throw Exception('해당하는 환자가 없습니다');
     }
-    final round = ref.watch(roundProvider);
+
+    final round = ref.watch(evalRoundProvider);
     final evalAsync = ref.watch(evaluationViewModelProvider(patientId));
     final EvaluationModel? eval = evalAsync.whenOrNull(
-      data: (data) => data.firstWhere((e) => e.round == round),
+      data: (data) {
+        final filtered = data.where((e) => e.round == round).toList();
+
+        final round1 = filtered.where((e) => e.round == 1);
+        if (round1.isEmpty) {
+          return null;
+        }
+        return round1.first;
+      },
     );
 
     return Scaffold(
       appBar: AppBar(
         title: Text('$round회차'),
+        centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => PatientIntroduceView()),
+            );
           },
           icon: Icon(Icons.arrow_back),
         ),
         actions: [
+          TextButton.icon(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(content: EvaluationRoundDropdown()),
+              );
+            },
+            icon: Icon(Icons.list),
+            label: Text('회차 선택'),
+          ),
           PopupMenuButton(
             onSelected: (value) {
               switch (value) {
@@ -97,7 +122,7 @@ class EvaluationDetailView extends ConsumerWidget {
             child: Column(
               children: [
                 PatientInfoView(patient: patient),
-                EvaluationHistoryView(),
+                EvaluationInfoView(),
               ],
             ),
           ),

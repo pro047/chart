@@ -1,15 +1,17 @@
 import 'package:chart/auth/model/model/auth_state_model.dart';
+import 'package:chart/auth/model/model/user_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthStateNotifier extends StateNotifier<AuthStateModel> {
-  AuthStateNotifier() : super(AuthStateModel(isLoggedIn: false));
+  AuthStateNotifier() : super(AuthStateModel(isLoggedIn: false, user: null));
 
-  void login() {
-    state = AuthStateModel(isLoggedIn: true);
+  void login(UserModel user) {
+    state = AuthStateModel(isLoggedIn: true, user: user);
   }
 
   void logout() {
-    state = AuthStateModel(isLoggedIn: false);
+    state = AuthStateModel(isLoggedIn: false, user: null);
+    print('logout 성공 : $state');
   }
 }
 

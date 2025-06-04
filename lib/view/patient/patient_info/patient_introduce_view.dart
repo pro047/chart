@@ -1,9 +1,15 @@
 import 'package:chart/view/evaluation/crud/evaluation_add_view.dart';
 import 'package:chart/view/evaluation/detail/chart_view.dart';
+import 'package:chart/view/evaluation/detail/evaluation_detail_view.dart';
 import 'package:chart/view/patient/dialog/patient_delete_dialog.dart';
-import 'package:chart/view/patient/lib/round_dropdown.dart';
 import 'package:chart/view/patient/patient_info/patient_info_view.dart';
+import 'package:chart/view/patient/patient_main_view.dart';
+import 'package:chart/view/plan/detail/plan_info_view.dart';
+import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
 import 'package:chart/view_model/patient/provider/patient_provider.dart';
+import 'package:chart/view_model/evaluation/provider/eval_round_provider.dart';
+import 'package:chart/view_model/plan/plan_view_model.dart';
+import 'package:chart/view_model/plan/provider/plan_round_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,10 +19,22 @@ class PatientIntroduceView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final patient = ref.watch(patientProvider);
-    print('[debug] patient state : $patient');
+    final patientId = ref.watch(patientIdProvider);
 
-    if (patient == null) {
+    if (patient == null || patientId == null) {
       throw Exception('해당하는 환자가 없습니다');
+    }
+
+    final evaluationAsync = ref.read(evaluationViewModelProvider(patientId));
+    final planAsync = ref.read(planViewModelProvider(patientId));
+
+    final evaluations = evaluationAsync.asData?.value ?? [];
+    final plans = planAsync.asData?.value ?? [];
+
+    if (evaluations.isEmpty || plans.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('환자 데이터가 없습니다')));
     }
 
     return Scaffold(
@@ -24,7 +42,10 @@ class PatientIntroduceView extends ConsumerWidget {
         title: Text('${patient.name} 님'),
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => PatientView()),
+            );
           },
           icon: Icon(Icons.arrow_back),
         ),
@@ -64,7 +85,53 @@ class PatientIntroduceView extends ConsumerWidget {
               children: [
                 PatientInfoView(patient: patient, showName: false),
                 SizedBox(height: 300, child: ChartView()),
-                RoundDropdown(),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        final evaluationRounds =
+                            evaluations
+                                .map((e) => e.round)
+                                .whereType<int>()
+                                .toSet()
+                                .toList()
+                              ..sort();
+                        final firstEvaluationRound = evaluationRounds.first;
+
+                        ref.read(evalRoundProvider.notifier).state =
+                            firstEvaluationRound;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EvaluationDetailView(),
+                          ),
+                        );
+                      },
+                      child: Text('평가'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        final planRounds =
+                            plans
+                                .map((e) => e.round)
+                                .whereType<int>()
+                                .toSet()
+                                .toList()
+                              ..sort();
+                        final firstPlanRound = planRounds.first;
+                        ref.read(planRoundProvider.notifier).state =
+                            firstPlanRound;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => PlanInfoView()),
+                        );
+                      },
+                      child: Text('계획'),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

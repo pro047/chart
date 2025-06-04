@@ -20,6 +20,7 @@ class SignupViewModel extends AsyncNotifier<int?> {
       state = AsyncData(newUser);
     } catch (e, st) {
       state = AsyncError(e, st);
+      throw Exception('signup error $e');
     }
   }
 }

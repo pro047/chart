@@ -1,5 +1,6 @@
 import 'package:chart/config/db.dart';
 import 'package:chart/model/model/therapist/therapist_name_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TherapistNameDatasource {
@@ -22,3 +23,7 @@ class TherapistNameDatasource {
     }
   }
 }
+
+final therapistNameDatasourceProvider = Provider(
+  (ref) => TherapistNameDatasource(),
+);

@@ -19,6 +19,7 @@ class _EvaluationEditViewState extends ConsumerState<EvaluationEditView> {
   final _editEvalFormKey = GlobalKey<FormState>();
 
   late final List<TextEditingController> _controllers;
+  late final List<EvaluationFieldModel> _fields;
 
   @override
   void initState() {
@@ -31,23 +32,8 @@ class _EvaluationEditViewState extends ConsumerState<EvaluationEditView> {
       TextEditingController(text: widget.eval.hx),
       TextEditingController(text: widget.eval.sx),
     ];
-  }
 
-  @override
-  void dispose() {
-    super.dispose();
-    for (var i in _controllers) {
-      i.dispose();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final evalProvider = ref.read(
-      evaluationViewModelProvider(widget.eval.patientId!).notifier,
-    );
-
-    final fields = [
+    _fields = [
       EvaluationFieldModel(
         controller: _controllers[0],
         label: 'Region',
@@ -79,11 +65,26 @@ class _EvaluationEditViewState extends ConsumerState<EvaluationEditView> {
         hintText: 'Sx',
       ),
     ];
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    for (var i in _controllers) {
+      i.dispose();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final evalProvider = ref.read(
+      evaluationViewModelProvider(widget.eval.patientId!).notifier,
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text('평가 수정')),
       body: EvaluationFormView(
-        fields: fields,
+        fields: _fields,
         formKey: _editEvalFormKey,
         onSubmit: () async {
           try {

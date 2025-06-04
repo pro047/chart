@@ -27,6 +27,8 @@ class _EvaluationAddViewState extends ConsumerState<EvaluationAddView> {
 
   final List<EvaluationFieldModel> _evalField = [];
 
+  int? _round;
+
   @override
   void initState() {
     super.initState();
@@ -64,6 +66,21 @@ class _EvaluationAddViewState extends ConsumerState<EvaluationAddView> {
         hintText: 'Sx',
       ),
     ]);
+
+    _loadRound();
+  }
+
+  Future<void> _loadRound() async {
+    final patientId = ref.read(patientIdProvider);
+    if (patientId == null) return;
+
+    final vmProvider = ref.read(
+      evaluationViewModelProvider(patientId).notifier,
+    );
+    final round = await vmProvider.getMaxRound(patientId);
+    setState(() {
+      _round = round;
+    });
   }
 
   @override
@@ -86,41 +103,34 @@ class _EvaluationAddViewState extends ConsumerState<EvaluationAddView> {
       return Scaffold(body: Center(child: Text('환자가 없습니다')));
     }
 
+    if (_round == null) {
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     final vmProvider = ref.read(
       evaluationViewModelProvider(patientId).notifier,
     );
-
-    return FutureBuilder(
-      future: vmProvider.getMaxRound(patientId),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Scaffold(body: CircularProgressIndicator());
-        }
-        final round = snapshot.data;
-
-        return Scaffold(
-          appBar: AppBar(title: Text('${(round).toString()} 회차')),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                PatientInfoView(patient: patient),
-                EvaluationFormView(
-                  fields: _evalField,
-                  formKey: _addEvalFormKey,
-                  onSubmit: () async {
-                    try {
-                      await vmProvider.submitEval(fields: _evalField);
-                      Navigator.pop(context);
-                    } catch (err) {
-                      throw Exception('에러 발생 : $err');
-                    }
-                  },
-                ),
-              ],
+    return Scaffold(
+      appBar: AppBar(title: Text('$_round 회차')),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            PatientInfoView(patient: patient),
+            EvaluationFormView(
+              fields: _evalField,
+              formKey: _addEvalFormKey,
+              onSubmit: () async {
+                try {
+                  await vmProvider.submitEval(fields: _evalField);
+                  Navigator.pop(context);
+                } catch (err) {
+                  throw Exception('에러 발생 : $err');
+                }
+              },
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

@@ -29,6 +29,10 @@ class PatientRepository {
   Future<void> deletePatientInfo(int id) async {
     await _datasource.deletePatientInfo(id);
   }
+
+  Future<List<PatientModel>> fetchRecentPatients() async {
+    return await _datasource.fetchRecentPatients();
+  }
 }
 
 final patientRepositoryProvider = Provider((ref) {
