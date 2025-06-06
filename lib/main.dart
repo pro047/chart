@@ -1,3 +1,4 @@
+// import 'package:chart/config/reset_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chart/config/db.dart';
@@ -5,6 +6,7 @@ import 'package:chart/ui/layout.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // resetDb();
 
   final db = await DatabaseHelper.instance.database;
   final tables = await db.rawQuery(

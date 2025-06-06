@@ -7,11 +7,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RecentPatientCardViewModel extends AsyncNotifier<List<PatientModel>> {
   @override
   FutureOr<List<PatientModel>> build() {
+    return _fetch();
+  }
+
+  Future<void> reload() async {
+    state = AsyncLoading();
+    state = await AsyncValue.guard(_fetch);
+  }
+
+  Future<List<PatientModel>> _fetch() {
     return ref.read(patientRepositoryProvider).fetchRecentPatients();
   }
 }
 
 final recentPatientCardViewModelrProvider =
     AsyncNotifierProvider<RecentPatientCardViewModel, List<PatientModel>>(
-      () => RecentPatientCardViewModel(),
+      RecentPatientCardViewModel.new,
     );

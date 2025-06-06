@@ -40,10 +40,11 @@ class PatientModel {
   Map<String, dynamic> toMap() {
     final formatter = DateFormat('yyyyMMdd');
     return {
+      'id': id,
       'name': name,
       'age': age,
       'gender': gender.name,
-      'firstVisit': formatter.format(firstVisit),
+      'first_visit': formatter.format(firstVisit),
       'occupation': occupation,
     };
   }
@@ -63,7 +64,7 @@ class PatientModel {
       name: map['name'],
       age: map['age'],
       gender: gender,
-      firstVisit: DateTime.parse(map['firstVisit']),
+      firstVisit: DateTime.parse(map['first_visit']),
       occupation: map['occupation'],
     );
   }

@@ -1,30 +1,15 @@
-import 'package:chart/auth/view_model/auth_state_provider.dart';
-import 'package:chart/model/model/therapist/therapist_todolist_model.dart';
-import 'package:chart/view/dashboard/todo_section/todo_item.dart';
-import 'package:chart/view_model/dashboard/therapist_todolist_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chart/auth/view_model/auth_state_provider.dart';
+import 'package:chart/view/dashboard/todo_section/todo_item.dart';
+import 'package:chart/view_model/therapist/data/therapist_todolist_view_model.dart';
+import 'package:chart/view_model/therapist/ui/therapist_todolist_ui_view_model.dart';
 
-class TherapistTodoCard extends ConsumerStatefulWidget {
+class TherapistTodoCard extends ConsumerWidget {
   const TherapistTodoCard({super.key});
 
   @override
-  ConsumerState<TherapistTodoCard> createState() => _TherapistTodoCardState();
-}
-
-class _TherapistTodoCardState extends ConsumerState<TherapistTodoCard> {
-  final Map<int, TextEditingController> _controllers = {};
-
-  @override
-  void dispose() {
-    super.dispose();
-    for (final controller in _controllers.values) {
-      controller.dispose();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final userId = ref.read(authStateProvider).user?.id;
     if (userId == null) return const SizedBox.shrink();
 
@@ -32,6 +17,10 @@ class _TherapistTodoCardState extends ConsumerState<TherapistTodoCard> {
     final todoVm = ref.read(
       therapistTodolistViewModelProvider(userId).notifier,
     );
+
+    final todoUiState = ref.watch(therapistTodolistUiViewModelProvider);
+    final todoUiVm = ref.read(therapistTodolistUiViewModelProvider.notifier);
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Padding(
@@ -40,25 +29,65 @@ class _TherapistTodoCardState extends ConsumerState<TherapistTodoCard> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            IconButton(onPressed: todoVm.addTodoList, icon: Icon(Icons.add)),
+            IconButton(
+              onPressed: () {
+                todoUiVm.toggleIsAdding();
+                print(todoUiState.isAdding);
+              },
+              icon: todoUiState.isAdding == true
+                  ? Icon(Icons.delete)
+                  : Icon(Icons.add),
+            ),
+
+            if (todoUiState.isAdding)
+              Row(
+                children: [
+                  SizedBox(
+                    width: 200,
+                    child: TextField(
+                      onChanged: (value) {
+                        todoUiVm.updateNewTodoText(value);
+                      },
+                      decoration: InputDecoration(hintText: '새로운 일정을 작성해주세요'),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      await todoVm.addTodo(todoUiState.newTodoText);
+                      todoUiVm.reset();
+                    },
+                    icon: Icon(Icons.check),
+                  ),
+                ],
+              ),
+
             todoState.when(
               data: (todoList) {
-                _syncControllers(todoList);
+                todoList.isEmpty
+                    ? ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        tileColor: Colors.grey[100],
+                        title: Center(child: Text('최근 일정이 없습니다')),
+                      )
+                    : todoUiVm.syncControllers(todoList);
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: todoList.length,
                   itemBuilder: (_, index) {
                     final todo = todoList[index];
-                    final controller = _controllers[todo.id];
+                    final controller = todoUiVm.controllers[todo.id];
                     if (controller == null) return SizedBox.shrink();
                     return TodoItem(
+                      key: ValueKey(todo.id),
                       todo: todo,
-                      controller: _controllers[todo.id]!,
+                      controller: todoUiVm.controllers[todo.id]!,
                       onConfirm: () {
                         todoVm.updateTodoText(
                           todo.id,
-                          _controllers[todo.id]!.text,
+                          todoUiState.controllers[todo.id]!.text,
                         );
                         todoVm.updateTodoConfirm(todo.id, true);
                       },
@@ -66,16 +95,15 @@ class _TherapistTodoCardState extends ConsumerState<TherapistTodoCard> {
                         todoVm.updateTodoConfirm(todo.id, false);
                         todoVm.updateTodoText(
                           todo.id,
-                          _controllers[todo.id]!.text,
+                          todoUiState.controllers[todo.id]!.text,
                         );
                       },
                       onDelete: () {
-                        todoVm.deleteTodoByID(todo.id);
-                        setState(() {
-                          _controllers.remove(todo.id)?.dispose();
-                        });
+                        todoVm.deleteTodo(todo.id);
+                        todoUiVm.dispostControllers(todo.id);
                       },
                       onDoneChanged: (value) {
+                        print('value : $value');
                         todoVm.updateTodoDone(todo.id, value);
                       },
                     );
@@ -89,18 +117,5 @@ class _TherapistTodoCardState extends ConsumerState<TherapistTodoCard> {
         ),
       ),
     );
-  }
-
-  void _syncControllers(List<TherapistTodolistModel> list) {
-    final ids = list.map((e) => e.id).toSet();
-    final controllersIds = _controllers.keys.toSet();
-
-    for (final id in ids.difference(controllersIds)) {
-      final text = list.firstWhere((e) => e.id == id).text;
-      _controllers[id] = TextEditingController(text: text);
-    }
-    for (final id in controllersIds.difference(ids)) {
-      _controllers.remove(id)?.dispose();
-    }
   }
 }

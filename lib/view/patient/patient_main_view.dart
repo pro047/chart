@@ -1,4 +1,3 @@
-import 'package:chart/ui/lib/app_bar.dart';
 import 'package:chart/view/patient/lib/patient_drawer_view.dart';
 import 'package:chart/view/patient/lib/patient_search.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,20 @@ class _PatientViewState extends ConsumerState<PatientView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appbar(context, ref),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text('chartpt'),
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+              icon: Icon(Icons.menu),
+            );
+          },
+        ),
+      ),
       drawer: PatientDrawer(),
       body: Padding(
         padding: EdgeInsets.all(10),

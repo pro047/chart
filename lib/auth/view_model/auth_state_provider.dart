@@ -6,11 +6,14 @@ class AuthStateNotifier extends StateNotifier<AuthStateModel> {
   AuthStateNotifier() : super(AuthStateModel(isLoggedIn: false, user: null));
 
   void login(UserModel user) {
+    print('[authStateProvider] login called : ${user.name}');
+    print('[authStateProvider] login called : ${user.id}');
     state = AuthStateModel(isLoggedIn: true, user: user);
   }
 
   void logout() {
     state = AuthStateModel(isLoggedIn: false, user: null);
+
     print('logout 성공 : $state');
   }
 }

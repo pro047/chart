@@ -1,4 +1,4 @@
-import 'package:chart/model/model/therapist/therapist_todolist_model.dart';
+import 'package:chart/model/model/therapist/data/therapist_todolist_model.dart';
 import 'package:flutter/material.dart';
 
 class TodoItem extends StatelessWidget {
@@ -21,6 +21,7 @@ class TodoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('checkbox value: ${todo.isDone}');
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -37,7 +38,15 @@ class TodoItem extends StatelessWidget {
               IconButton(onPressed: onConfirm, icon: Icon(Icons.check)),
               IconButton(onPressed: onEdit, icon: Icon(Icons.edit)),
               IconButton(onPressed: onDelete, icon: Icon(Icons.delete)),
-              Checkbox(value: todo.isDone, onChanged: (value) => onDoneChanged),
+              Checkbox(
+                value: todo.isDone,
+                onChanged: (value) {
+                  print('checkbox clicked: $value');
+                  print('checkbox value: ${todo.isDone}');
+
+                  onDoneChanged(value!);
+                },
+              ),
             ],
           ),
         ],

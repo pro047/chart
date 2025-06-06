@@ -72,7 +72,7 @@ class PatientDatasource {
       final db = await DatabaseHelper.instance.database;
       final result = await db.query(
         'patients',
-        orderBy: 'firstVisit DESC',
+        orderBy: 'first_visit DESC',
         limit: 5,
       );
       return result.map((e) => PatientModel.fromMap(e)).toList();

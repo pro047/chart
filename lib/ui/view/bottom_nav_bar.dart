@@ -11,10 +11,7 @@ Widget bottomNavbar(int currentIndex, WidgetRef ref) {
     items: [
       BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'home'),
       BottomNavigationBarItem(icon: Icon(Icons.person), label: 'patient'),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.local_hospital),
-        label: 'therapist',
-      ),
+      BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'more'),
     ],
   );
 }

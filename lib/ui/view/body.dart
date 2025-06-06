@@ -1,8 +1,8 @@
-import 'package:chart/ui/lib/tab_keys.dart';
+import 'package:chart/ui/constants/tab_keys.dart';
 import 'package:chart/ui/provider/tab_provider.dart';
 import 'package:chart/view/dashboard/dashboard_view.dart';
+import 'package:chart/view/more/more_view.dart';
 import 'package:chart/view/patient/patient_main_view.dart';
-import 'package:chart/view/plan/detail/plan_info_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,7 +25,7 @@ class BodyLayout extends ConsumerWidget {
           key: Tabkeys.patientKey,
           initialPage: const PatientView(),
         ),
-        _buildTabNavigator(key: Tabkeys.homeKey, initialPage: PlanInfoView()),
+        _buildTabNavigator(key: Tabkeys.morekey, initialPage: const MoreView()),
       ],
     );
   }

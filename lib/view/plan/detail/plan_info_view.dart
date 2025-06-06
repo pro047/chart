@@ -25,6 +25,14 @@ class PlanInfoView extends ConsumerWidget {
     final round = ref.watch(planRoundProvider);
     print('round $round');
 
+    if (round == null) {
+      final roundNotifier = ref.read(planRoundProvider.notifier);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        roundNotifier.state = 1;
+      });
+      return SizedBox.shrink();
+    }
+
     final planAsync = ref.watch(planViewModelProvider(patientId));
     final PlanModel? plan = planAsync.whenOrNull(
       data: (data) {
@@ -32,7 +40,6 @@ class PlanInfoView extends ConsumerWidget {
         if (filtered.isEmpty) {
           return null;
         }
-
         return filtered.first;
       },
     );

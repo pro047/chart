@@ -65,11 +65,13 @@ class _LoginViewState extends ConsumerState<LoginView> {
                           'auth state try: ${ref.watch(authStateProvider).isLoggedIn}',
                         );
 
-                        loginViewModel.saveLoginEmail(emailController.text);
                         final user = await loginViewModel.login(
                           emailController.text,
                           passwordController.text,
                         );
+
+                        loginViewModel.saveUserId(user.id);
+
                         print('email: ${emailController.text}');
                         print('password: ${passwordController.text}');
                         print('loginstate: ${loginState.value}');

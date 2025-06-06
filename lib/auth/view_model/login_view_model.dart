@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:chart/auth/model/model/user_model.dart';
 import 'package:chart/auth/model/repository/login_repository.dart';
 import 'package:chart/auth/view_model/auth_state_provider.dart';
+import 'package:chart/ui/provider/tab_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +22,7 @@ class LoginViewModel extends AsyncNotifier<UserModel?> {
       final user = await _loginRepository.login(email, password);
       state = AsyncData(user);
       ref.read(authStateProvider.notifier).login(user);
+      ref.read(currentTabProvider.notifier).state = 0;
       return user;
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -32,14 +34,14 @@ class LoginViewModel extends AsyncNotifier<UserModel?> {
     state = const AsyncData(null);
     ref.read(authStateProvider.notifier).logout();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('loggedEmail');
+    await prefs.remove('loggedUserId');
   }
 
-  Future<void> saveLoginEmail(String email) async {
+  Future<void> saveUserId(int userId) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('loggedEmail', email);
+    await prefs.setInt('loggedUserId', userId);
     // ignore: avoid_print
-    print('loggedEmail : ${prefs.getString('loggedEmail')}');
+    print('loggedUserId : ${prefs.getInt('loggedUserId')}');
   }
 }
 

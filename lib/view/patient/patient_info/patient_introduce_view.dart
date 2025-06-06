@@ -5,6 +5,7 @@ import 'package:chart/view/patient/dialog/patient_delete_dialog.dart';
 import 'package:chart/view/patient/patient_info/patient_info_view.dart';
 import 'package:chart/view/patient/patient_main_view.dart';
 import 'package:chart/view/plan/detail/plan_info_view.dart';
+import 'package:chart/view/plan/dialog/plan_add_dialog.dart';
 import 'package:chart/view_model/evaluation/evaluation_view_model.dart';
 import 'package:chart/view_model/patient/provider/patient_provider.dart';
 import 'package:chart/view_model/evaluation/provider/eval_round_provider.dart';
@@ -25,17 +26,15 @@ class PatientIntroduceView extends ConsumerWidget {
       throw Exception('해당하는 환자가 없습니다');
     }
 
-    final evaluationAsync = ref.read(evaluationViewModelProvider(patientId));
-    final planAsync = ref.read(planViewModelProvider(patientId));
+    final evaluationAsync = ref.watch(evaluationViewModelProvider(patientId));
+    final planAsync = ref.watch(planViewModelProvider(patientId));
+
+    if (evaluationAsync.isLoading || planAsync.isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
 
     final evaluations = evaluationAsync.asData?.value ?? [];
     final plans = planAsync.asData?.value ?? [];
-
-    if (evaluations.isEmpty || plans.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('환자 데이터가 없습니다')));
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -98,6 +97,7 @@ class PatientIntroduceView extends ConsumerWidget {
                                 .toSet()
                                 .toList()
                               ..sort();
+
                         final firstEvaluationRound = evaluationRounds.first;
 
                         ref.read(evalRoundProvider.notifier).state =
@@ -120,13 +120,22 @@ class PatientIntroduceView extends ConsumerWidget {
                                 .toSet()
                                 .toList()
                               ..sort();
-                        final firstPlanRound = planRounds.first;
-                        ref.read(planRoundProvider.notifier).state =
-                            firstPlanRound;
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => PlanInfoView()),
-                        );
+                        if (planRounds.isNotEmpty) {
+                          final firstPlanRound = planRounds.first;
+                          ref.read(planRoundProvider.notifier).state =
+                              firstPlanRound;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => PlanInfoView()),
+                          );
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return PlanAddDialog();
+                            },
+                          );
+                        }
                       },
                       child: Text('계획'),
                     ),

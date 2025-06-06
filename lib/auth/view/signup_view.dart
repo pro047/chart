@@ -15,12 +15,14 @@ class _SignupViewState extends ConsumerState<SignupView> {
   TextEditingController emailContoller = TextEditingController();
   TextEditingController passwordContoller = TextEditingController();
   TextEditingController nameContoller = TextEditingController();
+  TextEditingController hospitalContoller = TextEditingController();
 
   @override
   void dispose() {
     emailContoller.dispose();
     passwordContoller.dispose();
     nameContoller.dispose();
+    hospitalContoller.dispose();
     super.dispose();
   }
 
@@ -55,17 +57,23 @@ class _SignupViewState extends ConsumerState<SignupView> {
                   decoration: InputDecoration(labelText: 'name'),
                   controller: nameContoller,
                 ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'hospital'),
+                  controller: hospitalContoller,
+                ),
                 TextButton(
                   onPressed: () async {
                     final newUser = SignupModel(
                       email: emailContoller.text,
                       password: passwordContoller.text,
                       name: nameContoller.text,
+                      hostpital: hospitalContoller.text,
                     );
                     await signupViewModel.signup(newUser);
                     print("emailContoller.text: ${emailContoller.text}");
                     print("passwordContoller.text: ${passwordContoller.text}");
                     print("nameContoller.text: ${nameContoller.text}");
+                    print("hospitalContoller.text: ${hospitalContoller.text}");
                     print("signupState: $signupState");
                     print("signupviewmodel: $signupViewModel");
                     ref.read(authStateProvider.notifier).logout();

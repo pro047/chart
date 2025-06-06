@@ -5,18 +5,32 @@ class TherapistTodolistModel {
   bool isConfirm;
 
   TherapistTodolistModel({
-    int? id,
+    required this.id,
     required this.text,
     this.isDone = false,
     this.isConfirm = false,
-  }) : id = id ?? DateTime.now().millisecondsSinceEpoch;
+  });
 
-  Map<String, dynamic> toMap() => {
-    'id': id,
-    'text': text,
-    'isDone': isDone,
-    'isConfirm': isConfirm,
-  };
+  factory TherapistTodolistModel.newTodo({
+    required String text,
+    bool isConfirm = false,
+  }) {
+    return TherapistTodolistModel(id: -1, text: text, isConfirm: isConfirm);
+  }
+
+  Map<String, dynamic> toMap({required int userId}) {
+    final map = <String, dynamic>{
+      'user_id': userId,
+      'text': text,
+      'is_done': isDone ? 1 : 0,
+      'is_confirm': isConfirm ? 1 : 0,
+    };
+
+    if (id != -1) {
+      map['id'] = id;
+    }
+    return map;
+  }
 
   TherapistTodolistModel copyWith({
     int? id,
@@ -36,7 +50,7 @@ class TherapistTodolistModel {
       TherapistTodolistModel(
         id: map['id'],
         text: map['text'],
-        isDone: map['isDone'],
-        isConfirm: map['isConfirm'],
+        isDone: map['is_done'] == 1,
+        isConfirm: map['is_confirm'] == 1,
       );
 }
